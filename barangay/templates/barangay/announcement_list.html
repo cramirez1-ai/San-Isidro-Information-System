@@ -1,0 +1,30 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Public Notices</p>
+        <h1>Announcements</h1>
+        <p class="page-copy">Publish advisories, programs, health notices, meetings, and emergency updates for residents.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:announcement_create' %}">Add Announcement</a>
+</section>
+
+<section class="stack">
+    {% for announcement in announcements %}
+        <article class="panel notice">
+            <div class="section-head">
+                <div>
+                    <span class="badge">{{ announcement.category }}</span>
+                    <h2>{{ announcement.title }}</h2>
+                </div>
+                <a href="{% url 'barangay:announcement_update' announcement.pk %}">Edit</a>
+            </div>
+            <p>{{ announcement.body|linebreaksbr }}</p>
+            <small>{{ announcement.published_on|date:"M d, Y" }}{% if not announcement.is_published %} - Draft{% endif %}</small>
+        </article>
+    {% empty %}
+        <p class="empty-state">No announcements recorded.</p>
+    {% endfor %}
+</section>
+{% endblock %}

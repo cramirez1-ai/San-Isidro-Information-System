@@ -1,0 +1,30 @@
+Watching for file changes with StatReloader
+[29/Apr/2026 19:43:24] "GET / HTTP/1.1" 200 4749
+[29/Apr/2026 19:43:24,164] - Broken pipe from ('127.0.0.1', 50079)
+[29/Apr/2026 19:43:51] "GET / HTTP/1.1" 200 4749
+[29/Apr/2026 19:43:52,188] - Broken pipe from ('127.0.0.1', 60901)
+[29/Apr/2026 19:44:02] "GET / HTTP/1.1" 200 4749
+[29/Apr/2026 19:44:03,393] - Broken pipe from ('127.0.0.1', 60907)
+Not Found: /households/add/
+[29/Apr/2026 19:44:45] "GET /households/add/ HTTP/1.1" 404 8523
+[29/Apr/2026 19:49:03] "GET / HTTP/1.1" 200 4749
+[29/Apr/2026 19:49:04] "GET /households/ HTTP/1.1" 200 2043
+[29/Apr/2026 19:49:04] "GET /residents/ HTTP/1.1" 200 2761
+[29/Apr/2026 19:49:04] "GET /requests/ HTTP/1.1" 200 2503
+[29/Apr/2026 19:49:04] "GET /blotter/ HTTP/1.1" 200 2503
+[29/Apr/2026 19:49:04,200] - Broken pipe from ('127.0.0.1', 59463)
+[29/Apr/2026 19:49:16] "GET /households/new/ HTTP/1.1" 200 2966
+[29/Apr/2026 19:49:16] "GET /residents/new/ HTTP/1.1" 200 5672
+[29/Apr/2026 19:49:16] "GET /officials/new/ HTTP/1.1" 200 3898
+[29/Apr/2026 19:49:16] "GET /services/new/ HTTP/1.1" 200 3187
+[29/Apr/2026 19:49:16] "GET /requests/new/ HTTP/1.1" 200 4160
+[29/Apr/2026 19:49:16] "GET /announcements/new/ HTTP/1.1" 200 3250
+[29/Apr/2026 19:49:16] "GET /blotter/new/ HTTP/1.1" 200 4211
+[29/Apr/2026 19:49:16,942] - Broken pipe from ('127.0.0.1', 59464)
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\urls.py changed, reloading.
+Watching for file changes with StatReloader
+[29/Apr/2026 19:49:49] "GET /households/add/ HTTP/1.1" 200 2966
+[29/Apr/2026 19:49:49] "GET /residents/add/ HTTP/1.1" 200 5672
+[29/Apr/2026 19:49:49] "GET /requests/add/ HTTP/1.1" 200 4160
+[29/Apr/2026 19:49:49] "GET /blotter/add/ HTTP/1.1" 200 4211
+[29/Apr/2026 19:49:49,463] - Broken pipe from ('127.0.0.1', 63698)

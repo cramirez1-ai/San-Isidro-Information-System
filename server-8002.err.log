@@ -1,0 +1,29 @@
+Watching for file changes with StatReloader
+[29/Apr/2026 20:22:00] "GET / HTTP/1.1" 200 7736
+[29/Apr/2026 20:22:00,590] - Broken pipe from ('127.0.0.1', 57982)
+[29/Apr/2026 20:22:28] "GET / HTTP/1.1" 200 7736
+[29/Apr/2026 20:22:29,075] - Broken pipe from ('127.0.0.1', 61041)
+[29/Apr/2026 20:35:19] "GET / HTTP/1.1" 200 11220
+[29/Apr/2026 20:35:19,681] - Broken pipe from ('127.0.0.1', 64631)
+[29/Apr/2026 20:45:29] "GET / HTTP/1.1" 200 11220
+[29/Apr/2026 20:45:29,743] - Broken pipe from ('127.0.0.1', 65087)
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\forms.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\config\settings.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\models.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\USER\Documents\OneDrive\Documents\FINAL PROJECT\barangay\views.py changed, reloading.
+Watching for file changes with StatReloader

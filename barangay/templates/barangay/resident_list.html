@@ -1,0 +1,61 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Resident Registry</p>
+        <h1>Residents</h1>
+        <p class="page-copy">Search and maintain resident profiles for barangay certificates, reports, and household records.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:resident_create' %}">Add Resident</a>
+</section>
+
+<form class="filter-bar" method="get">
+    <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search residents">
+    <select class="form-control" name="gender">
+        <option value="">All genders</option>
+        {% for value, label in gender_choices %}
+            <option value="{{ value }}"{% if gender == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <select class="form-control" name="voter_status">
+        <option value="">All voter status</option>
+        {% for value, label in voter_choices %}
+            <option value="{{ value }}"{% if voter_status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-secondary" type="submit">Filter</button>
+</form>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Civil Status</th>
+                <th>Voter</th>
+                <th>Household</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for resident in residents %}
+                <tr>
+                    <td><a href="{{ resident.get_absolute_url }}">{{ resident.full_name }}</a></td>
+                    <td>{{ resident.age|default:"-" }}</td>
+                    <td>{{ resident.gender }}</td>
+                    <td>{{ resident.civil_status }}</td>
+                    <td>{{ resident.voter_status }}</td>
+                    <td>{{ resident.household|default:"-" }}</td>
+                    <td><a href="{% url 'barangay:resident_update' resident.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7" class="empty-state">No residents recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "barangay/pagination.html" %}
+{% endblock %}

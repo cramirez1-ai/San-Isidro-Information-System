@@ -1,0 +1,31 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Barangay Services</p>
+        <h1>Services</h1>
+        <p class="page-copy">Maintain service descriptions, requirements, fees, and processing days for resident transactions.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:service_create' %}">Add Service</a>
+</section>
+
+<section class="card-grid">
+    {% for service in services %}
+        <article class="record-card">
+            <div>
+                <span class="badge">{{ service.processing_days }} day{{ service.processing_days|pluralize }}</span>
+                <h2>{{ service.name }}</h2>
+                <p>{{ service.description|default:"No description" }}</p>
+            </div>
+            <dl>
+                <div><dt>Fee</dt><dd>PHP {{ service.fee }}</dd></div>
+                <div><dt>Requirements</dt><dd>{{ service.requirements|linebreaksbr|default:"-" }}</dd></div>
+            </dl>
+            <a href="{% url 'barangay:service_update' service.pk %}">Edit</a>
+        </article>
+    {% empty %}
+        <p class="empty-state">No services recorded.</p>
+    {% endfor %}
+</section>
+{% endblock %}

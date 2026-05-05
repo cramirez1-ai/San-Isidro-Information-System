@@ -1,0 +1,55 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Resident Profile</p>
+        <h1>{{ resident.full_name }}</h1>
+        <p class="page-copy">A complete view of the resident's personal, household, and service request information.</p>
+    </div>
+    <div class="hero-actions">
+        <a class="btn btn-secondary" href="{% url 'barangay:resident_list' %}">Back</a>
+        <a class="btn btn-primary" href="{% url 'barangay:resident_update' resident.pk %}">Edit</a>
+    </div>
+</section>
+
+<section class="content-grid two-columns">
+    <div class="panel">
+        <h2>Personal Details</h2>
+        <dl class="fact-grid">
+            <div><dt>Age</dt><dd>{{ resident.age|default:"-" }}</dd></div>
+            <div><dt>Gender</dt><dd>{{ resident.gender }}</dd></div>
+            <div><dt>Civil Status</dt><dd>{{ resident.civil_status }}</dd></div>
+            <div><dt>Voter Status</dt><dd>{{ resident.voter_status }}</dd></div>
+            <div><dt>Occupation</dt><dd>{{ resident.occupation|default:"-" }}</dd></div>
+            <div><dt>Contact</dt><dd>{{ resident.contact_number|default:"-" }}</dd></div>
+        </dl>
+    </div>
+    <div class="panel">
+        <h2>Household</h2>
+        <dl class="fact-grid">
+            <div><dt>Household</dt><dd>{{ resident.household|default:"-" }}</dd></div>
+            <div><dt>Head</dt><dd>{{ resident.is_household_head|yesno:"Yes,No" }}</dd></div>
+            <div><dt>Address</dt><dd>{{ resident.address|default:"-" }}</dd></div>
+            <div><dt>Remarks</dt><dd>{{ resident.remarks|default:"-" }}</dd></div>
+        </dl>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>Recent Service Requests</h2>
+        <a href="{% url 'barangay:request_create' %}">New request</a>
+    </div>
+    <div class="compact-list">
+        {% for request in resident.service_requests.all|slice:":5" %}
+            <a class="compact-row" href="{% url 'barangay:request_update' request.pk %}">
+                <span>{{ request.request_number }} - {{ request.service.name }}</span>
+                <small class="badge status-{{ request.status|slugify }}">{{ request.status }}</small>
+            </a>
+        {% empty %}
+            <p class="empty-state">No service requests recorded.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

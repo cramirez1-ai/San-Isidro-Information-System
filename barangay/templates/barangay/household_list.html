@@ -1,0 +1,114 @@
+{% extends "barangay/base.html" %}
+
+{% block title %}Households · Barangay San Isidro{% endblock %}
+
+{% block body_class %}household-clean-page{% endblock %}
+
+{% block content %}
+<section class="household-hero" aria-labelledby="household-title">
+    <div class="household-hero-main">
+        <p class="eyebrow">Household Registry</p>
+        <h1 id="household-title">Households</h1>
+        <p class="page-copy">
+            Organized household numbers, purok locations, heads, and member counts for the barangay office.
+        </p>
+        <div class="household-actions">
+            <a class="btn btn-primary" href="{% url 'barangay:household_create' %}">Add Household</a>
+            <a class="btn btn-secondary" href="{% url 'barangay:resident_create' %}">Add Resident</a>
+        </div>
+    </div>
+
+    <div class="household-summary" aria-label="Household summary">
+        <article class="household-summary-card">
+            <span>Total Households</span>
+            <strong>{{ total_households }}</strong>
+        </article>
+        <article class="household-summary-card">
+            <span>Linked Members</span>
+            <strong>{{ total_members }}</strong>
+        </article>
+        <article class="household-summary-card">
+            <span>Active Puroks</span>
+            <strong>{{ active_puroks }}</strong>
+        </article>
+        <article class="household-summary-card">
+            <span>Assigned Heads</span>
+            <strong>{{ assigned_heads }}</strong>
+        </article>
+    </div>
+</section>
+
+<section class="household-panel" aria-label="Household records">
+    <div class="household-panel-head">
+        <div>
+            <p class="eyebrow muted">Records</p>
+            <h2>{{ listed_households }} household{{ listed_households|pluralize }} shown</h2>
+        </div>
+        {% if query %}
+            <a class="household-clear-link" href="{% url 'barangay:household_list' %}">Clear search</a>
+        {% endif %}
+    </div>
+
+    <form class="filter-bar household-filter" method="get">
+        <label class="sr-only" for="household-search">Search households</label>
+        <input
+            id="household-search"
+            class="form-control"
+            type="search"
+            name="q"
+            value="{{ query }}"
+            placeholder="Household number, purok, address, contact"
+        >
+        <button class="btn btn-secondary" type="submit">Search</button>
+    </form>
+
+    <div class="table-wrap household-table-wrap">
+        <table class="household-table">
+            <thead>
+                <tr>
+                    <th>Household No.</th>
+                    <th>Purok</th>
+                    <th>Address</th>
+                    <th>Head</th>
+                    <th>Members</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for household in households %}
+                    <tr>
+                        <td>
+                            <span class="household-number">
+                                <span>HH</span>
+                                {{ household.household_number }}
+                            </span>
+                        </td>
+                        <td><span class="purok-chip">{{ household.purok }}</span></td>
+                        <td>{{ household.street_address|default:"No street address" }}</td>
+                        <td>
+                            {% with head=household.head %}
+                                {{ head.full_name|default:"Unassigned" }}
+                            {% endwith %}
+                        </td>
+                        <td><span class="member-count">{{ household.residents.count }}</span></td>
+                        <td>
+                            <a class="table-action" href="{% url 'barangay:household_update' household.pk %}">Edit</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            {% if query %}
+                                No households matched "{{ query }}".
+                            {% else %}
+                                No households recorded.
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% include "barangay/pagination.html" %}
+{% endblock %}

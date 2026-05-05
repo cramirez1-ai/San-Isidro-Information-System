@@ -1,0 +1,31 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Barangay Leadership</p>
+        <h1>Officials</h1>
+        <p class="page-copy">Present the barangay officials, committees, term details, and contact information.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:official_create' %}">Add Official</a>
+</section>
+
+<section class="card-grid">
+    {% for official in officials %}
+        <article class="record-card">
+            <div>
+                <span class="badge">{{ official.position }}</span>
+                <h2>{{ official.full_name }}</h2>
+                <p>{{ official.committee|default:"No committee assigned" }}</p>
+            </div>
+            <dl>
+                <div><dt>Term</dt><dd>{{ official.term_start|date:"Y"|default:"-" }} - {{ official.term_end|date:"Y"|default:"-" }}</dd></div>
+                <div><dt>Contact</dt><dd>{{ official.contact_number|default:"-" }}</dd></div>
+            </dl>
+            <a href="{% url 'barangay:official_update' official.pk %}">Edit</a>
+        </article>
+    {% empty %}
+        <p class="empty-state">No officials recorded.</p>
+    {% endfor %}
+</section>
+{% endblock %}

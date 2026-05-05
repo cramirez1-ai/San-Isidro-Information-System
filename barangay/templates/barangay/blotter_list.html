@@ -1,0 +1,105 @@
+{% extends "barangay/base.html" %}
+
+{% block body_class %}blotter-workspace{% endblock %}
+
+{% block content %}
+<section class="blotter-hero">
+    <div class="blotter-hero-main">
+        <p class="eyebrow">Incident Records Desk</p>
+        <h1>Blotter Command Center</h1>
+        <p class="page-copy">Track complaints from intake to mediation, settlement, referral, or closure with clear case references and accountable status updates.</p>
+        <div class="blotter-meta" aria-label="Blotter summary">
+            <span><strong>{{ listed_incidents }}</strong> shown</span>
+            <span><strong>{{ total_incidents }}</strong> total cases</span>
+            <span><strong>{{ active_incidents }}</strong> active</span>
+        </div>
+    </div>
+    <div class="blotter-hero-actions">
+        <a class="btn btn-primary" href="{% url 'barangay:blotter_create' %}">Add Incident</a>
+        {% if query or status %}
+            <a class="btn btn-secondary" href="{% url 'barangay:blotter_list' %}">Clear Filter</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class="blotter-stats" aria-label="Blotter status overview">
+    <article>
+        <span class="blotter-stat-mark mark-active"></span>
+        <small>Active Cases</small>
+        <strong>{{ active_incidents }}</strong>
+    </article>
+    <article>
+        <span class="blotter-stat-mark mark-mediation"></span>
+        <small>For Mediation</small>
+        <strong>{{ mediation_incidents }}</strong>
+    </article>
+    <article>
+        <span class="blotter-stat-mark mark-settled"></span>
+        <small>Settled</small>
+        <strong>{{ settled_incidents }}</strong>
+    </article>
+</section>
+
+<section class="blotter-panel">
+    <div class="blotter-panel-head">
+        <div>
+            <p class="eyebrow">Case Registry</p>
+            <h2>Incident log</h2>
+        </div>
+        <form class="blotter-filter" method="get">
+            <label class="sr-only" for="blotter-search">Search blotter</label>
+            <input id="blotter-search" class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search case, complainant, respondent, type, or location">
+            <label class="sr-only" for="blotter-status">Status</label>
+            <select id="blotter-status" class="form-control" name="status">
+                <option value="">All status</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-secondary" type="submit">Filter</button>
+        </form>
+    </div>
+
+    <div class="blotter-table-wrap">
+    <table class="blotter-table">
+        <thead>
+            <tr>
+                <th>Case No.</th>
+                <th>Incident</th>
+                <th>Complainant</th>
+                <th>Respondent</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for incident in incidents %}
+                <tr>
+                    <td><span class="case-number">{{ incident.case_number }}</span></td>
+                    <td>
+                        <strong>{{ incident.incident_type }}</strong>
+                        <small>{{ incident.location|default:"No location recorded" }}</small>
+                    </td>
+                    <td>{{ incident.complainant_name }}</td>
+                    <td>{{ incident.respondent_name|default:"-" }}</td>
+                    <td>
+                        <span>{{ incident.incident_date|date:"M d, Y" }}</span>
+                        <small>{{ incident.incident_time|time:"g:i A"|default:"Time not set" }}</small>
+                    </td>
+                    <td><span class="badge status-{{ incident.status|slugify }}">{{ incident.status }}</span></td>
+                    <td><a class="table-action" href="{% url 'barangay:blotter_update' incident.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">No blotter incidents match this view.</div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</section>
+{% include "barangay/pagination.html" %}
+{% endblock %}

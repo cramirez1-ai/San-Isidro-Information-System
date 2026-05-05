@@ -1,0 +1,121 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Barangay San Isidro Information System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'barangay/css/app.css' %}">
+</head>
+<body class="{% if not request.user.is_authenticated %}auth-page {% endif %}{% block body_class %}{% endblock %}">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+        <aside class="side-panel">
+            <a class="brand" href="{% url 'barangay:dashboard' %}">
+                <span class="brand-mark">SI</span>
+                <span>
+                    <strong>Barangay San Isidro</strong>
+                    <small>Surigao City Information System</small>
+                </span>
+            </a>
+            {% if request.user.is_authenticated %}
+                <nav class="side-nav" aria-label="Main navigation">
+                    <a class="{% if request.path == '/' %}is-active{% endif %}" href="{% url 'barangay:dashboard' %}">
+                        <span class="nav-code">D</span><span>Dashboard</span>
+                    </a>
+                    <a class="{% if '/residents/' in request.path %}is-active{% endif %}" href="{% url 'barangay:resident_list' %}">
+                        <span class="nav-code">R</span><span>Residents</span>
+                    </a>
+                    <a class="{% if '/households/' in request.path %}is-active{% endif %}" href="{% url 'barangay:household_list' %}">
+                        <span class="nav-code">H</span><span>Households</span>
+                    </a>
+                    <a class="{% if '/requests/' in request.path %}is-active{% endif %}" href="{% url 'barangay:request_list' %}">
+                        <span class="nav-code">Q</span><span>Requests</span>
+                    </a>
+                    <a class="{% if '/blotter/' in request.path %}is-active{% endif %}" href="{% url 'barangay:blotter_list' %}">
+                        <span class="nav-code">B</span><span>Blotter</span>
+                    </a>
+                    <a class="{% if '/services/' in request.path %}is-active{% endif %}" href="{% url 'barangay:service_list' %}">
+                        <span class="nav-code">S</span><span>Services</span>
+                    </a>
+                    <a class="{% if '/officials/' in request.path %}is-active{% endif %}" href="{% url 'barangay:official_list' %}">
+                        <span class="nav-code">O</span><span>Officials</span>
+                    </a>
+                    <a class="{% if '/announcements/' in request.path %}is-active{% endif %}" href="{% url 'barangay:announcement_list' %}">
+                        <span class="nav-code">A</span><span>Announcements</span>
+                    </a>
+                </nav>
+                <div class="side-meta">
+                    <span>Active Workspace</span>
+                    <strong>San Isidro Office</strong>
+                </div>
+            {% else %}
+                <div class="auth-side-note">
+                    <span class="side-badge">Secure Access</span>
+                    <strong>Barangay records stay protected behind user accounts.</strong>
+                    <small>Login or register to continue to the information system.</small>
+                </div>
+            {% endif %}
+        </aside>
+
+        <div class="workspace">
+            <header class="site-header">
+                {% if request.user.is_authenticated %}
+                    <a class="mobile-brand" href="{% url 'barangay:dashboard' %}">
+                        <span class="brand-mark">SI</span>
+                        <span>Barangay San Isidro</span>
+                    </a>
+                    <div class="header-title">
+                        <span>Barangay San Isidro</span>
+                        <strong>Information System</strong>
+                    </div>
+                    <nav class="top-actions" aria-label="Quick links">
+                        <span class="user-chip">{{ request.user.username }}</span>
+                        <a class="btn btn-secondary" href="{% url 'barangay:request_create' %}">New Request</a>
+                        {% if request.user.is_staff %}
+                            <a class="btn btn-primary" href="{% url 'admin:index' %}">Admin</a>
+                        {% endif %}
+                        <form class="logout-form" method="post" action="{% url 'barangay:logout' %}">
+                            {% csrf_token %}
+                            <button class="btn btn-secondary" type="submit">Logout</button>
+                        </form>
+                    </nav>
+                {% else %}
+                    <a class="mobile-brand auth-brand" href="{% url 'barangay:login' %}">
+                        <span class="brand-mark">SI</span>
+                        <span>Barangay San Isidro</span>
+                    </a>
+                    <nav class="top-actions auth-top-actions" aria-label="Account links">
+                        <a href="{% url 'barangay:login' %}">Login</a>
+                        <a href="{% url 'barangay:register' %}">Register</a>
+                    </nav>
+                {% endif %}
+            </header>
+
+            {% if not request.user.is_authenticated %}
+                <div class="auth-ribbon">
+                    <span><strong>Barangay San Isidro, Surigao City, Surigao del Norte</strong> information system for resident, household, request, and office records.</span>
+                    <span>Login or register to continue.</span>
+                </div>
+            {% endif %}
+
+            {% if messages %}
+                <div class="message-stack">
+                    {% for message in messages %}
+                        <div class="message {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <main class="page-shell" id="main-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <footer class="site-footer">
+                <span>Barangay San Isidro, Surigao City, Surigao del Norte</span>
+                <span>{% now "M d, Y" %}</span>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
