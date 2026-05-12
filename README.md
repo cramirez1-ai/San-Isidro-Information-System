@@ -51,3 +51,24 @@ http://127.0.0.1:8000/admin/
 ## Notes
 
 The seed command adds starter services and one clearly marked sample announcement. Replace sample content with official barangay data before real use.
+
+## Deploy on Vercel
+
+This project includes a Vercel-ready structure:
+
+- `vercel.json` configures install, build, and dev commands.
+- `build_files.sh` runs `collectstatic` and migrations during deployment.
+- `.python-version` pins Python 3.12 for Django 6.
+- `.vercelignore` keeps local files out of the deployment bundle.
+
+Set these environment variables in Vercel Project Settings:
+
+```text
+SECRET_KEY=your-secure-secret-key
+DEBUG=False
+DATABASE_URL=your-postgres-database-url
+ALLOWED_HOSTS=.vercel.app,your-domain.com
+CSRF_TRUSTED_ORIGINS=https://*.vercel.app,https://your-domain.com
+```
+
+Use an external PostgreSQL database for production. SQLite is only for local development.

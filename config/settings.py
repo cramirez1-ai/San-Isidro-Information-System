@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,12 +21,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o2!t-i$h9#*2rl)d1*n05k$$)@fer1y_!%xnf-+@nz$t*9$2%m'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-o2!t-i$h9#*2rl)d1*n05k$$)@fer1y_!%xnf-+@nz$t*9$2%m",
+)
+
+IS_VERCEL = os.getenv("VERCEL") == "1"
+IS_PRODUCTION = IS_VERCEL or os.getenv("ENVIRONMENT", "").lower() == "production"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (
+    os.getenv("DEBUG", "False").lower() == "true"
+    if IS_PRODUCTION
+    else True
+)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv(
+        "ALLOWED_HOSTS",
+        ".vercel.app,127.0.0.1,localhost,testserver",
+    ).split(",")
+    if host.strip()
+]
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app").split(",")
+    if origin.strip()
+]
 INTERNAL_IPS = ["127.0.0.1"]
 
 
@@ -74,12 +97,42 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.sqlite3")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if DATABASE_URL:
+    from urllib.parse import unquote, urlparse
+
+    parsed_database = urlparse(DATABASE_URL)
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": unquote(parsed_database.path.lstrip("/")),
+            "USER": unquote(parsed_database.username or ""),
+            "PASSWORD": unquote(parsed_database.password or ""),
+            "HOST": parsed_database.hostname,
+            "PORT": parsed_database.port or "5432",
+            "OPTIONS": {"sslmode": "require"},
+        }
     }
-}
+elif DB_ENGINE == "django.db.backends.sqlite3":
+    DATABASES = {
+        "default": {
+            "ENGINE": DB_ENGINE,
+            "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
+        }
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": DB_ENGINE,
+            "NAME": os.getenv("DB_NAME", "eventcore_san_isidro"),
+            "USER": os.getenv("DB_USER", "postgres"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "PORT": os.getenv("DB_PORT", "5432"),
+        }
+    }
 
 
 # Password validation
@@ -116,8 +169,24 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static'] if (BASE_DIR / 'static').exists() else []
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE_BACKEND = (
+    "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+    if IS_PRODUCTION and not DEBUG
+    else "django.contrib.staticfiles.storage.StaticFilesStorage"
+)
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": STATICFILES_STORAGE_BACKEND,
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

@@ -1,0 +1,77 @@
+{% extends "barangay/base.html" %}
+
+{% block body_class %}eventcore-page{% endblock %}
+
+{% block content %}
+<section class="eventcore-hero event-detail-hero">
+    <div>
+        <p class="eyebrow">{{ event.category }} Event</p>
+        <h1>{{ event.title }}</h1>
+        <p class="page-copy">{{ event.description|default:"Event details are ready for barangay coordination." }}</p>
+        <div class="event-detail-tags">
+            <span>{{ event.start_at|date:"M d, Y g:i A" }}</span>
+            <span>{{ event.venue }}</span>
+            <span>{{ event.status }}</span>
+        </div>
+    </div>
+    <div class="eventcore-actions">
+        <a class="btn btn-primary" href="{% url 'barangay:event_update' event.pk %}">Edit Event</a>
+        <a class="btn btn-secondary" href="{% url 'barangay:event_list' %}">Back</a>
+    </div>
+</section>
+
+<section class="event-detail-layout">
+    <div class="panel event-overview">
+        <div class="section-head">
+            <h2>Event Details</h2>
+        </div>
+        <dl class="fact-grid">
+            <div><dt>Starts</dt><dd>{{ event.start_at|date:"M d, Y g:i A" }}</dd></div>
+            <div><dt>Ends</dt><dd>{{ event.end_at|date:"M d, Y g:i A" }}</dd></div>
+            <div><dt>Duration</dt><dd>{{ event.duration_label }}</dd></div>
+            <div><dt>Organizer</dt><dd>{{ event.organizer|default:"Barangay Office" }}</dd></div>
+            <div><dt>Lead Official</dt><dd>{{ event.lead_official|default:"Not assigned" }}</dd></div>
+            <div><dt>Expected</dt><dd>{{ event.expected_attendees }} attendee{{ event.expected_attendees|pluralize }}</dd></div>
+            <div><dt>Budget</dt><dd>PHP {{ event.budget }}</dd></div>
+            <div><dt>Visibility</dt><dd>{% if event.is_public %}Public{% else %}Internal{% endif %}</dd></div>
+        </dl>
+        {% if event.notes %}
+            <p class="event-notes">{{ event.notes|linebreaksbr }}</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="section-head">
+            <h2>Attendees</h2>
+            <a href="{% url 'barangay:event_attendee_add' event.pk %}">Add</a>
+        </div>
+        <div class="compact-list">
+            {% for attendee in event.attendees.all %}
+                <div class="compact-row">
+                    <span><strong>{{ attendee.display_name }}</strong><br>{{ attendee.role }}</span>
+                    <small class="badge status-{{ attendee.status|slugify }}">{{ attendee.status }}</small>
+                </div>
+            {% empty %}
+                <p class="empty-state">No attendees listed.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="section-head">
+            <h2>Resources</h2>
+            <a href="{% url 'barangay:event_resource_add' event.pk %}">Add</a>
+        </div>
+        <div class="compact-list">
+            {% for resource in event.resources.all %}
+                <div class="compact-row">
+                    <span><strong>{{ resource.item }}</strong><br>{{ resource.quantity }} needed{% if resource.assigned_to %} by {{ resource.assigned_to }}{% endif %}</span>
+                    <small class="badge status-{{ resource.status|slugify }}">{{ resource.status }}</small>
+                </div>
+            {% empty %}
+                <p class="empty-state">No resources listed.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

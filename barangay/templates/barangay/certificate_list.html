@@ -1,0 +1,66 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Certificate Issuance</p>
+        <h1>Certificates</h1>
+        <p class="page-copy">Issue and track barangay clearance, indigency, residency, and business clearance certificates.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:certificate_create' %}">Add Certificate</a>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card accent-teal"><span class="stat-label">Issued</span><strong>{{ issued_count }}</strong><small>Ready official documents</small></article>
+    <article class="stat-card accent-gold"><span class="stat-label">Claimed</span><strong>{{ claimed_count }}</strong><small>Released to applicants</small></article>
+</section>
+
+<form class="filter-bar" method="get">
+    <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search certificates">
+    <select class="form-control" name="certificate_type">
+        <option value="">All types</option>
+        {% for value, label in type_choices %}
+            <option value="{{ value }}"{% if certificate_type == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <select class="form-control" name="status">
+        <option value="">All status</option>
+        {% for value, label in status_choices %}
+            <option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-secondary" type="submit">Filter</button>
+</form>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th>Certificate No.</th>
+                <th>Type</th>
+                <th>Applicant</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Issued</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for certificate in certificates %}
+                <tr>
+                    <td>{{ certificate.certificate_number }}</td>
+                    <td>{{ certificate.certificate_type }}</td>
+                    <td>{{ certificate.applicant_display }}</td>
+                    <td>{{ certificate.purpose }}</td>
+                    <td><span class="badge status-{{ certificate.status|slugify }}">{{ certificate.status }}</span></td>
+                    <td>{{ certificate.issued_on|date:"M d, Y" }}</td>
+                    <td><a href="{% url 'barangay:certificate_update' certificate.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="7" class="empty-state">No certificates recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "barangay/pagination.html" %}
+{% endblock %}

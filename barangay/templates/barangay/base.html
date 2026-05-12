@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Barangay San Isidro Information System{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'barangay/css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'barangay/css/app.css' %}?v=polished-1">
 </head>
 <body class="{% if not request.user.is_authenticated %}auth-page {% endif %}{% block body_class %}{% endblock %}">
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -32,6 +32,15 @@
                     <a class="{% if '/requests/' in request.path %}is-active{% endif %}" href="{% url 'barangay:request_list' %}">
                         <span class="nav-code">Q</span><span>Requests</span>
                     </a>
+                    <a class="{% if '/certificates/' in request.path %}is-active{% endif %}" href="{% url 'barangay:certificate_list' %}">
+                        <span class="nav-code">C</span><span>Certificates</span>
+                    </a>
+                    <a class="{% if '/reports/' in request.path %}is-active{% endif %}" href="{% url 'barangay:reports' %}">
+                        <span class="nav-code">P</span><span>Reports</span>
+                    </a>
+                    <a class="{% if '/events/' in request.path %}is-active{% endif %}" href="{% url 'barangay:event_list' %}">
+                        <span class="nav-code">E</span><span>EventCore</span>
+                    </a>
                     <a class="{% if '/blotter/' in request.path %}is-active{% endif %}" href="{% url 'barangay:blotter_list' %}">
                         <span class="nav-code">B</span><span>Blotter</span>
                     </a>
@@ -43,6 +52,24 @@
                     </a>
                     <a class="{% if '/announcements/' in request.path %}is-active{% endif %}" href="{% url 'barangay:announcement_list' %}">
                         <span class="nav-code">A</span><span>Announcements</span>
+                    </a>
+                    <a class="{% if '/health/' in request.path %}is-active{% endif %}" href="{% url 'barangay:health_list' %}">
+                        <span class="nav-code">M</span><span>Health Records</span>
+                    </a>
+                    <a class="{% if '/projects/' in request.path %}is-active{% endif %}" href="{% url 'barangay:project_list' %}">
+                        <span class="nav-code">J</span><span>Projects</span>
+                    </a>
+                    <a class="{% if '/notifications/' in request.path %}is-active{% endif %}" href="{% url 'barangay:notification_list' %}">
+                        <span class="nav-code">N</span><span>Notifications</span>
+                    </a>
+                    <a class="{% if '/users/' in request.path %}is-active{% endif %}" href="{% url 'barangay:user_list' %}">
+                        <span class="nav-code">U</span><span>Users</span>
+                    </a>
+                    <a class="{% if '/settings/' in request.path %}is-active{% endif %}" href="{% url 'barangay:settings' %}">
+                        <span class="nav-code">T</span><span>Settings</span>
+                    </a>
+                    <a class="{% if '/audit-logs/' in request.path %}is-active{% endif %}" href="{% url 'barangay:audit_log_list' %}">
+                        <span class="nav-code">L</span><span>Audit Logs</span>
                     </a>
                 </nav>
                 <div class="side-meta">
@@ -71,7 +98,7 @@
                     </div>
                     <nav class="top-actions" aria-label="Quick links">
                         <span class="user-chip">{{ request.user.username }}</span>
-                        <a class="btn btn-secondary" href="{% url 'barangay:request_create' %}">New Request</a>
+                        <a class="btn btn-secondary" href="{% url 'barangay:certificate_create' %}">New Certificate</a>
                         {% if request.user.is_staff %}
                             <a class="btn btn-primary" href="{% url 'admin:index' %}">Admin</a>
                         {% endif %}

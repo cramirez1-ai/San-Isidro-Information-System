@@ -1,0 +1,10 @@
+venv/
+db.sqlite3
+*.log
+*.err.log
+sent_emails/
+staticfiles/
+__pycache__/
+*.pyc
+.env
+.vercel/

@@ -1,0 +1,65 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Reports Center</p>
+        <h1>Reports</h1>
+        <p class="page-copy">View printable summaries for residents, certificates, service requests, projects, and blotter records.</p>
+    </div>
+    <button class="btn btn-primary" type="button" onclick="window.print()">Print Report</button>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card accent-teal"><span class="stat-label">Residents</span><strong>{{ stats.residents }}</strong><small>Population records</small></article>
+    <article class="stat-card accent-blue"><span class="stat-label">Certificates</span><strong>{{ stats.certificates }}</strong><small>{{ stats.issued_certificates }} issued</small></article>
+    <article class="stat-card accent-red"><span class="stat-label">Blotters</span><strong>{{ stats.blotters }}</strong><small>{{ stats.open_blotters }} active</small></article>
+    <article class="stat-card accent-gold"><span class="stat-label">Projects</span><strong>{{ stats.projects }}</strong><small>Barangay programs</small></article>
+</section>
+
+<section class="content-grid two-columns">
+    <article class="panel">
+        <div class="section-head"><h2>Certificates by Type</h2></div>
+        <div class="compact-list">
+            {% for row in certificate_types %}
+                <div class="compact-row"><span>{{ row.certificate_type }}</span><strong>{{ row.total }}</strong></div>
+            {% empty %}
+                <p class="empty-state">No certificate data yet.</p>
+            {% endfor %}
+        </div>
+    </article>
+    <article class="panel">
+        <div class="section-head"><h2>Blotter by Status</h2></div>
+        <div class="compact-list">
+            {% for row in blotter_statuses %}
+                <div class="compact-row"><span>{{ row.status }}</span><strong>{{ row.total }}</strong></div>
+            {% empty %}
+                <p class="empty-state">No blotter data yet.</p>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="content-grid two-columns">
+    <article class="panel">
+        <div class="section-head"><h2>Recent Certificates</h2><a href="{% url 'barangay:certificate_list' %}">View all</a></div>
+        <div class="compact-list">
+            {% for certificate in recent_certificates %}
+                <div class="compact-row"><span>{{ certificate.certificate_number }} - {{ certificate.applicant_display }}</span><small>{{ certificate.issued_on|date:"M d" }}</small></div>
+            {% empty %}
+                <p class="empty-state">No certificates recorded.</p>
+            {% endfor %}
+        </div>
+    </article>
+    <article class="panel">
+        <div class="section-head"><h2>Recent Blotter Cases</h2><a href="{% url 'barangay:blotter_list' %}">View all</a></div>
+        <div class="compact-list">
+            {% for incident in recent_blotters %}
+                <div class="compact-row"><span>{{ incident.case_number }} - {{ incident.incident_type }}</span><small>{{ incident.status }}</small></div>
+            {% empty %}
+                <p class="empty-state">No blotter records.</p>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+{% endblock %}

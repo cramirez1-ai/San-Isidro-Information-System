@@ -3,10 +3,10 @@
 {% block title %}Login | Barangay San Isidro{% endblock %}
 
 {% block content %}
-<section class="auth-layout" aria-label="User authentication">
+<section class="auth-layout auth-login-layout" aria-label="User authentication">
     <div class="auth-card auth-entry-card">
         <span class="auth-badge">Secure Account Access</span>
-        <h1>Login to Barangay San Isidro Information System</h1>
+        <h1>Login</h1>
         <p class="auth-copy">Use your account to access barangay records and services.</p>
 
         <div class="auth-pills" aria-label="System areas">
@@ -37,30 +37,9 @@
 
             <div class="form-actions auth-links">
                 <button class="btn btn-primary" type="submit">Login</button>
-                <a href="{% url 'barangay:password_reset' %}">Forgot password?</a>
                 <a href="{% url 'barangay:register' %}">Create account</a>
             </div>
         </form>
     </div>
-
-    <aside class="auth-card auth-role-card" aria-label="Information system overview">
-        <h2>Barangay records workspace</h2>
-        <p>A focused place for maintaining local records, document requests, announcements, and office activity.</p>
-
-        <div class="role-list">
-            <div>
-                <strong>Resident Profiles</strong>
-                <span>Keep personal details, addresses, and household links organized.</span>
-            </div>
-            <div>
-                <strong>Household Registry</strong>
-                <span>Track household numbers, purok assignments, heads, and members.</span>
-            </div>
-            <div>
-                <strong>Service Requests</strong>
-                <span>Monitor certificates, clearances, blotter records, and notices.</span>
-            </div>
-        </div>
-    </aside>
 </section>
 {% endblock %}

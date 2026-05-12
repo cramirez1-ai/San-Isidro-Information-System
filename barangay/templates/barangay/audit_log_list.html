@@ -1,0 +1,31 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Security Trail</p>
+        <h1>Audit Logs</h1>
+        <p class="page-copy">Review recent create and update activity captured by the barangay information system.</p>
+    </div>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>Date</th><th>User</th><th>Module</th><th>Action</th><th>Details</th></tr></thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.created_at|date:"M d, Y H:i" }}</td>
+                    <td>{{ log.user|default:"System" }}</td>
+                    <td>{{ log.module|default:"-" }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.details|truncatechars:100|default:"-" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="5" class="empty-state">No audit activity yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "barangay/pagination.html" %}
+{% endblock %}

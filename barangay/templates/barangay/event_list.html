@@ -1,0 +1,68 @@
+{% extends "barangay/base.html" %}
+
+{% block body_class %}eventcore-page{% endblock %}
+
+{% block content %}
+<section class="eventcore-hero">
+    <div>
+        <p class="eyebrow">EventCore</p>
+        <h1>Barangay Event Command Center</h1>
+        <p class="page-copy">Plan assemblies, health missions, clean-up drives, youth programs, relief operations, and cultural activities for Barangay San Isidro.</p>
+    </div>
+    <div class="eventcore-actions">
+        <a class="btn btn-primary" href="{% url 'barangay:event_create' %}">New Event</a>
+        <a class="btn btn-secondary" href="{% url 'barangay:announcement_create' %}">Post Notice</a>
+    </div>
+</section>
+
+<section class="eventcore-stats" aria-label="EventCore summary">
+    <article><span>Total Events</span><strong>{{ total_events }}</strong></article>
+    <article><span>Upcoming</span><strong>{{ upcoming_events }}</strong></article>
+    <article><span>Public Posts</span><strong>{{ public_events }}</strong></article>
+    <article><span>Attendees</span><strong>{{ registered_attendees }}</strong></article>
+</section>
+
+<form class="filter-bar eventcore-filter" method="get">
+    <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search title, venue, organizer, audience">
+    <select class="form-control" name="category">
+        <option value="">All categories</option>
+        {% for value, label in category_choices %}
+            <option value="{{ value }}"{% if category == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <select class="form-control" name="status">
+        <option value="">All status</option>
+        {% for value, label in status_choices %}
+            <option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-secondary" type="submit">Filter</button>
+</form>
+
+<section class="eventcore-grid">
+    {% for event in events %}
+        <article class="event-card">
+            <div class="event-card-head">
+                <span class="badge status-{{ event.status|slugify }}">{{ event.status }}</span>
+                <span class="event-category">{{ event.category }}</span>
+            </div>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.description|default:"No description yet."|truncatechars:145 }}</p>
+            <dl class="event-meta">
+                <div><dt>Venue</dt><dd>{{ event.venue }}</dd></div>
+                <div><dt>Schedule</dt><dd>{{ event.start_at|date:"M d, Y g:i A" }}</dd></div>
+                <div><dt>Organizer</dt><dd>{{ event.organizer|default:"Barangay Office" }}</dd></div>
+                <div><dt>Audience</dt><dd>{{ event.target_audience|default:"Residents" }}</dd></div>
+            </dl>
+            <div class="event-card-foot">
+                <span>{{ event.attendees.count }} attendee{{ event.attendees.count|pluralize }}</span>
+                <span>{{ event.resources.count }} resource{{ event.resources.count|pluralize }}</span>
+                <a href="{% url 'barangay:event_detail' event.pk %}">Open</a>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty-state">No events found.</p>
+    {% endfor %}
+</section>
+{% include "barangay/pagination.html" %}
+{% endblock %}

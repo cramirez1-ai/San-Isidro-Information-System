@@ -1,0 +1,33 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Resident Alerts</p>
+        <h1>SMS / Notifications</h1>
+        <p class="page-copy">Prepare resident announcements for SMS, email, or posted notice workflows.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:notification_create' %}">Add Notification</a>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>Title</th><th>Channel</th><th>Audience</th><th>Status</th><th>Schedule</th><th></th></tr></thead>
+        <tbody>
+            {% for notification in notifications %}
+                <tr>
+                    <td>{{ notification.title }}</td>
+                    <td>{{ notification.channel }}</td>
+                    <td>{{ notification.audience }}</td>
+                    <td><span class="badge status-{{ notification.status|slugify }}">{{ notification.status }}</span></td>
+                    <td>{{ notification.scheduled_for|date:"M d, Y H:i"|default:"-" }}</td>
+                    <td><a href="{% url 'barangay:notification_update' notification.pk %}">Edit</a></td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6" class="empty-state">No notifications recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "barangay/pagination.html" %}
+{% endblock %}

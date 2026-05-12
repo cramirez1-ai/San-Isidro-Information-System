@@ -1,26 +1,44 @@
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import (
     AnnouncementForm,
+    BarangayProfileForm,
     BarangayOfficialForm,
     BlotterIncidentForm,
+    CertificateForm,
+    EventAttendeeForm,
+    EventForm,
+    EventResourceForm,
+    HealthRecordForm,
     HouseholdForm,
+    ProjectForm,
     ResidentForm,
+    ResidentNotificationForm,
     ServiceForm,
     ServiceRequestForm,
     UserRegistrationForm,
 )
 from .models import (
     Announcement,
+    AuditLog,
+    BarangayProfile,
     BarangayOfficial,
     BlotterIncident,
+    Certificate,
+    Event,
+    EventAttendee,
+    EventResource,
+    HealthRecord,
     Household,
+    Project,
     Resident,
+    ResidentNotification,
     Service,
     ServiceRequest,
 )
@@ -71,6 +89,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["stats"] = {
             "residents": Resident.objects.count(),
             "households": Household.objects.count(),
+            "upcoming_events": Event.objects.exclude(
+                status__in=[Event.Status.COMPLETED, Event.Status.CANCELLED]
+            ).count(),
             "pending_requests": ServiceRequest.objects.filter(
                 status__in=[ServiceRequest.Status.PENDING, ServiceRequest.Status.PROCESSING]
             ).count(),
@@ -80,6 +101,9 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         }
         context["announcements"] = Announcement.objects.filter(is_published=True)[:4]
         context["requests"] = ServiceRequest.objects.select_related("service", "resident")[:5]
+        context["events"] = Event.objects.select_related("lead_official").exclude(
+            status=Event.Status.CANCELLED
+        )[:4]
         context["officials"] = BarangayOfficial.objects.filter(is_active=True)[:6]
         context["services"] = Service.objects.filter(is_active=True)[:6]
         return context
@@ -91,6 +115,12 @@ class SavedMessageMixin(LoginRequiredMixin):
 
     def form_valid(self, form):
         response = super().form_valid(form)
+        AuditLog.objects.create(
+            user=self.request.user.username,
+            module=self.model._meta.verbose_name.title() if self.model else "Record",
+            action="Saved record",
+            details=str(self.object),
+        )
         messages.success(self.request, self.success_message)
         return response
 
@@ -311,6 +341,67 @@ class RequestUpdateView(RequestCreateView, UpdateView):
         return context
 
 
+class CertificateListView(LoginRequiredMixin, ListView):
+    model = Certificate
+    template_name = "barangay/certificate_list.html"
+    context_object_name = "certificates"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Certificate.objects.select_related("resident")
+        queryset = apply_search(
+            queryset,
+            self.request.GET.get("q", "").strip(),
+            [
+                "certificate_number",
+                "certificate_type",
+                "applicant_name",
+                "resident__first_name",
+                "resident__last_name",
+                "purpose",
+            ],
+        )
+        status = self.request.GET.get("status")
+        certificate_type = self.request.GET.get("certificate_type")
+        if status:
+            queryset = queryset.filter(status=status)
+        if certificate_type:
+            queryset = queryset.filter(certificate_type=certificate_type)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "")
+        context["status"] = self.request.GET.get("status", "")
+        context["certificate_type"] = self.request.GET.get("certificate_type", "")
+        context["status_choices"] = Certificate.Status.choices
+        context["type_choices"] = Certificate.CertificateType.choices
+        context["issued_count"] = Certificate.objects.filter(status=Certificate.Status.ISSUED).count()
+        context["claimed_count"] = Certificate.objects.filter(status=Certificate.Status.CLAIMED).count()
+        return context
+
+
+class CertificateCreateView(SavedMessageMixin, CreateView):
+    model = Certificate
+    form_class = CertificateForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:certificate_list")
+    success_message = "Certificate record saved."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "New Certificate"
+        context["back_url"] = reverse_lazy("barangay:certificate_list")
+        return context
+
+
+class CertificateUpdateView(CertificateCreateView, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Edit Certificate"
+        return context
+
+
 class AnnouncementListView(LoginRequiredMixin, ListView):
     model = Announcement
     template_name = "barangay/announcement_list.html"
@@ -335,6 +426,128 @@ class AnnouncementUpdateView(AnnouncementCreateView, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Edit Announcement"
+        return context
+
+
+class EventListView(LoginRequiredMixin, ListView):
+    model = Event
+    template_name = "barangay/event_list.html"
+    context_object_name = "events"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Event.objects.select_related("lead_official").prefetch_related("attendees", "resources")
+        queryset = apply_search(
+            queryset,
+            self.request.GET.get("q", "").strip(),
+            ["title", "venue", "organizer", "target_audience", "description"],
+        )
+        status = self.request.GET.get("status")
+        category = self.request.GET.get("category")
+        if status:
+            queryset = queryset.filter(status=status)
+        if category:
+            queryset = queryset.filter(category=category)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        upcoming = Event.objects.exclude(status__in=[Event.Status.COMPLETED, Event.Status.CANCELLED])
+        context["query"] = self.request.GET.get("q", "")
+        context["status"] = self.request.GET.get("status", "")
+        context["category"] = self.request.GET.get("category", "")
+        context["status_choices"] = Event.Status.choices
+        context["category_choices"] = Event.Category.choices
+        context["total_events"] = Event.objects.count()
+        context["upcoming_events"] = upcoming.count()
+        context["public_events"] = Event.objects.filter(is_public=True).count()
+        context["registered_attendees"] = EventAttendee.objects.count()
+        return context
+
+
+class EventDetailView(LoginRequiredMixin, DetailView):
+    model = Event
+    template_name = "barangay/event_detail.html"
+    context_object_name = "event"
+
+    def get_queryset(self):
+        return Event.objects.select_related("lead_official").prefetch_related("attendees__resident", "resources")
+
+
+class EventCreateView(SavedMessageMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:event_list")
+    success_message = "Event saved."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "New Event"
+        context["back_url"] = reverse_lazy("barangay:event_list")
+        return context
+
+
+class EventUpdateView(EventCreateView, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Edit Event"
+        return context
+
+
+class EventAttendeeCreateView(SavedMessageMixin, CreateView):
+    model = EventAttendee
+    form_class = EventAttendeeForm
+    template_name = "barangay/form.html"
+    success_message = "Event attendee saved."
+
+    def get_initial(self):
+        initial = super().get_initial()
+        event_id = self.kwargs.get("event_pk")
+        if event_id:
+            initial["event"] = event_id
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy("barangay:event_detail", args=[self.object.event_id])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event_id = self.kwargs.get("event_pk")
+        context["title"] = "Add Event Attendee"
+        context["back_url"] = (
+            reverse_lazy("barangay:event_detail", args=[event_id])
+            if event_id
+            else reverse_lazy("barangay:event_list")
+        )
+        return context
+
+
+class EventResourceCreateView(SavedMessageMixin, CreateView):
+    model = EventResource
+    form_class = EventResourceForm
+    template_name = "barangay/form.html"
+    success_message = "Event resource saved."
+
+    def get_initial(self):
+        initial = super().get_initial()
+        event_id = self.kwargs.get("event_pk")
+        if event_id:
+            initial["event"] = event_id
+        return initial
+
+    def get_success_url(self):
+        return reverse_lazy("barangay:event_detail", args=[self.object.event_id])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event_id = self.kwargs.get("event_pk")
+        context["title"] = "Add Event Resource"
+        context["back_url"] = (
+            reverse_lazy("barangay:event_detail", args=[event_id])
+            if event_id
+            else reverse_lazy("barangay:event_list")
+        )
         return context
 
 
@@ -400,4 +613,192 @@ class BlotterUpdateView(BlotterCreateView, UpdateView):
         context["title"] = "Edit Blotter Incident"
         return context
 
-# Create your views here.
+
+class ReportsView(LoginRequiredMixin, TemplateView):
+    template_name = "barangay/reports.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["stats"] = {
+            "residents": Resident.objects.count(),
+            "households": Household.objects.count(),
+            "certificates": Certificate.objects.count(),
+            "issued_certificates": Certificate.objects.filter(status=Certificate.Status.ISSUED).count(),
+            "blotters": BlotterIncident.objects.count(),
+            "open_blotters": BlotterIncident.objects.exclude(
+                status__in=[BlotterIncident.Status.SETTLED, BlotterIncident.Status.CLOSED]
+            ).count(),
+            "requests": ServiceRequest.objects.count(),
+            "projects": Project.objects.count(),
+        }
+        context["certificate_types"] = Certificate.objects.values("certificate_type").annotate(total=Count("id"))
+        context["blotter_statuses"] = BlotterIncident.objects.values("status").annotate(total=Count("id"))
+        context["recent_certificates"] = Certificate.objects.select_related("resident")[:8]
+        context["recent_blotters"] = BlotterIncident.objects.all()[:8]
+        return context
+
+
+class UserListView(LoginRequiredMixin, ListView):
+    model = User
+    template_name = "barangay/user_list.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        return User.objects.order_by("-is_superuser", "-is_staff", "username")
+
+
+class SettingsView(LoginRequiredMixin, UpdateView):
+    model = BarangayProfile
+    form_class = BarangayProfileForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:settings")
+    success_message = "Barangay settings saved."
+
+    def get_object(self, queryset=None):
+        return BarangayProfile.current()
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        AuditLog.objects.create(
+            user=self.request.user.username,
+            module="Settings",
+            action="Updated barangay profile",
+            details=str(self.object),
+        )
+        messages.success(self.request, self.success_message)
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Barangay Settings"
+        context["back_url"] = reverse_lazy("barangay:dashboard")
+        return context
+
+
+class HealthRecordListView(LoginRequiredMixin, ListView):
+    model = HealthRecord
+    template_name = "barangay/health_record_list.html"
+    context_object_name = "records"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = HealthRecord.objects.select_related("resident")
+        queryset = apply_search(
+            queryset,
+            self.request.GET.get("q", "").strip(),
+            ["name", "resident__first_name", "resident__last_name", "details"],
+        )
+        category = self.request.GET.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "")
+        context["category"] = self.request.GET.get("category", "")
+        context["category_choices"] = HealthRecord.Category.choices
+        return context
+
+
+class HealthRecordCreateView(SavedMessageMixin, CreateView):
+    model = HealthRecord
+    form_class = HealthRecordForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:health_list")
+    success_message = "Health record saved."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "New Health Record"
+        context["back_url"] = reverse_lazy("barangay:health_list")
+        return context
+
+
+class HealthRecordUpdateView(HealthRecordCreateView, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Edit Health Record"
+        return context
+
+
+class ProjectListView(LoginRequiredMixin, ListView):
+    model = Project
+    template_name = "barangay/project_list.html"
+    context_object_name = "projects"
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = Project.objects.select_related("lead_official")
+        queryset = apply_search(
+            queryset,
+            self.request.GET.get("q", "").strip(),
+            ["title", "description", "funding_source"],
+        )
+        status = self.request.GET.get("status")
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q", "")
+        context["status"] = self.request.GET.get("status", "")
+        context["status_choices"] = Project.Status.choices
+        return context
+
+
+class ProjectCreateView(SavedMessageMixin, CreateView):
+    model = Project
+    form_class = ProjectForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:project_list")
+    success_message = "Project saved."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "New Project"
+        context["back_url"] = reverse_lazy("barangay:project_list")
+        return context
+
+
+class ProjectUpdateView(ProjectCreateView, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Edit Project"
+        return context
+
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = ResidentNotification
+    template_name = "barangay/notification_list.html"
+    context_object_name = "notifications"
+    paginate_by = 20
+
+
+class NotificationCreateView(SavedMessageMixin, CreateView):
+    model = ResidentNotification
+    form_class = ResidentNotificationForm
+    template_name = "barangay/form.html"
+    success_url = reverse_lazy("barangay:notification_list")
+    success_message = "Notification saved."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "New Notification"
+        context["back_url"] = reverse_lazy("barangay:notification_list")
+        return context
+
+
+class NotificationUpdateView(NotificationCreateView, UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Edit Notification"
+        return context
+
+
+class AuditLogListView(LoginRequiredMixin, ListView):
+    model = AuditLog
+    template_name = "barangay/audit_log_list.html"
+    context_object_name = "logs"
+    paginate_by = 30

@@ -1,0 +1,44 @@
+{% extends "barangay/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Barangay Development</p>
+        <h1>Projects</h1>
+        <p class="page-copy">Monitor barangay programs, project budgets, funding source, status, and assigned lead officials.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'barangay:project_create' %}">Add Project</a>
+</section>
+
+<form class="filter-bar" method="get">
+    <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search projects">
+    <select class="form-control" name="status">
+        <option value="">All status</option>
+        {% for value, label in status_choices %}
+            <option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+    <button class="btn btn-secondary" type="submit">Filter</button>
+</form>
+
+<section class="card-grid">
+    {% for project in projects %}
+        <article class="record-card">
+            <div>
+                <span class="badge status-{{ project.status|slugify }}">{{ project.status }}</span>
+                <h2>{{ project.title }}</h2>
+                <p>{{ project.description|default:"No description" }}</p>
+            </div>
+            <dl>
+                <div><dt>Budget</dt><dd>PHP {{ project.budget }}</dd></div>
+                <div><dt>Funding</dt><dd>{{ project.funding_source|default:"-" }}</dd></div>
+                <div><dt>Lead</dt><dd>{{ project.lead_official|default:"-" }}</dd></div>
+            </dl>
+            <a href="{% url 'barangay:project_update' project.pk %}">Edit</a>
+        </article>
+    {% empty %}
+        <p class="empty-state">No projects recorded.</p>
+    {% endfor %}
+</section>
+{% include "barangay/pagination.html" %}
+{% endblock %}

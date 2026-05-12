@@ -6,39 +6,19 @@
     <div class="hero-main">
         <p class="eyebrow">{{ profile.classification }}</p>
         <h1>Barangay San Isidro Information System</h1>
-        <p class="hero-copy">A complete digital workspace for residents, households, requests, announcements, and blotter records in {{ profile.city }}, {{ profile.province }}.</p>
-        <div class="hero-pills" aria-label="Barangay quick facts">
-            <span>Population {{ profile.population_2020 }}</span>
-            <span>Postal {{ profile.postal_code }}</span>
-            <span>{{ profile.psgc_code }}</span>
+        <p class="hero-copy">A clean digital workspace for resident records, household registry, certificates, reports, announcements, and daily barangay office transactions.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="{% url 'barangay:resident_create' %}">Add Resident</a>
+            <a class="btn btn-secondary" href="{% url 'barangay:certificate_create' %}">Issue Certificate</a>
+            <a class="btn btn-secondary" href="{% url 'barangay:reports' %}">View Reports</a>
         </div>
-    </div>
-    <div class="hero-actions">
-        <a class="btn btn-primary" href="{% url 'barangay:resident_create' %}">Add Resident</a>
-        <a class="btn btn-secondary" href="{% url 'barangay:request_create' %}">New Request</a>
     </div>
     <div class="hero-visual" aria-label="Barangay hall visual">
         <img src="{% static 'barangay/img/san-isidro-hero.png' %}" alt="">
         <div class="hero-mini-card">
-            <span>Today</span>
+            <span>Office Date</span>
             <strong>{% now "M d, Y" %}</strong>
         </div>
-    </div>
-</section>
-
-<section class="showcase-band">
-    <div>
-        <p class="eyebrow">Project Overview</p>
-        <h2>What is inside this system?</h2>
-        <p>
-            This project is designed for barangay office work: tracking residents,
-            organizing households, processing documents, posting notices, and recording incidents.
-        </p>
-    </div>
-    <div class="showcase-metrics" aria-label="Project modules">
-        <span><strong>7</strong> Core Modules</span>
-        <span><strong>5</strong> Starter Services</span>
-        <span><strong>2020</strong> Census Profile</span>
     </div>
 </section>
 
@@ -54,6 +34,11 @@
         <small>Family records</small>
     </article>
     <article class="stat-card accent-blue">
+        <span class="stat-label">Upcoming Events</span>
+        <strong>{{ stats.upcoming_events }}</strong>
+        <small>EventCore plans</small>
+    </article>
+    <article class="stat-card accent-violet">
         <span class="stat-label">Pending Requests</span>
         <strong>{{ stats.pending_requests }}</strong>
         <small>For processing</small>
@@ -65,11 +50,34 @@
     </article>
 </section>
 
+<section class="quick-grid" aria-label="Quick actions">
+    <a href="{% url 'barangay:resident_create' %}">
+        <span class="quick-mark">R</span>
+        <strong>Add Resident</strong>
+        <small>Create a resident profile</small>
+    </a>
+    <a href="{% url 'barangay:household_create' %}">
+        <span class="quick-mark">H</span>
+        <strong>Add Household</strong>
+        <small>Register a home record</small>
+    </a>
+    <a href="{% url 'barangay:certificate_create' %}">
+        <span class="quick-mark">C</span>
+        <strong>Issue Certificate</strong>
+        <small>Clearance, indigency, residency</small>
+    </a>
+    <a href="{% url 'barangay:blotter_create' %}">
+        <span class="quick-mark">B</span>
+        <strong>Log Blotter</strong>
+        <small>Record an incident</small>
+    </a>
+</section>
+
 <section class="module-section">
     <div class="section-head">
         <div>
-            <p class="eyebrow muted">System Modules</p>
-            <h2>Built for real barangay transactions</h2>
+            <p class="eyebrow muted">Main Modules</p>
+            <h2>Barangay office tools</h2>
         </div>
     </div>
     <div class="module-grid">
@@ -88,6 +96,21 @@
             <strong>Service Requests</strong>
             <small>Barangay clearance, residency, indigency, business clearance, and request tracking.</small>
         </a>
+        <a class="module-card module-certificates" href="{% url 'barangay:certificate_list' %}">
+            <span class="module-icon">C</span>
+            <strong>Certificates</strong>
+            <small>Issue and monitor barangay clearance, indigency, residency, and business certificates.</small>
+        </a>
+        <a class="module-card module-reports" href="{% url 'barangay:reports' %}">
+            <span class="module-icon">P</span>
+            <strong>Reports</strong>
+            <small>Review printable summaries for residents, certificates, requests, and blotter records.</small>
+        </a>
+        <a class="module-card module-events" href="{% url 'barangay:event_list' %}">
+            <span class="module-icon">E</span>
+            <strong>EventCore</strong>
+            <small>Plan barangay programs, track attendees, assign supplies, manage venues, and monitor budgets.</small>
+        </a>
         <a class="module-card module-blotter" href="{% url 'barangay:blotter_list' %}">
             <span class="module-icon">B</span>
             <strong>Blotter Records</strong>
@@ -103,91 +126,6 @@
             <strong>Announcements</strong>
             <small>Public advisories, programs, meetings, health notices, and emergency posts.</small>
         </a>
-    </div>
-</section>
-
-<section class="quick-grid" aria-label="Quick actions">
-    <a href="{% url 'barangay:resident_create' %}">
-        <span class="quick-mark">R</span>
-        <strong>Add Resident</strong>
-        <small>Create a resident profile</small>
-    </a>
-    <a href="{% url 'barangay:household_create' %}">
-        <span class="quick-mark">H</span>
-        <strong>Add Household</strong>
-        <small>Register a home record</small>
-    </a>
-    <a href="{% url 'barangay:announcement_create' %}">
-        <span class="quick-mark">A</span>
-        <strong>Post Notice</strong>
-        <small>Publish an announcement</small>
-    </a>
-    <a href="{% url 'barangay:blotter_create' %}">
-        <span class="quick-mark">B</span>
-        <strong>Log Blotter</strong>
-        <small>Record an incident</small>
-    </a>
-</section>
-
-<section class="workflow-panel">
-    <div>
-        <p class="eyebrow muted">Office Workflow</p>
-        <h2>From resident request to release</h2>
-    </div>
-    <ol class="workflow-list">
-        <li>
-            <span>01</span>
-            <strong>Register</strong>
-            <small>Add resident and household details.</small>
-        </li>
-        <li>
-            <span>02</span>
-            <strong>Request</strong>
-            <small>Select a service and record the purpose.</small>
-        </li>
-        <li>
-            <span>03</span>
-            <strong>Process</strong>
-            <small>Track pending, processing, ready, or released status.</small>
-        </li>
-        <li>
-            <span>04</span>
-            <strong>Report</strong>
-            <small>Review records through lists, filters, and admin.</small>
-        </li>
-    </ol>
-</section>
-
-<section class="content-grid two-columns">
-    <div class="panel">
-        <div class="section-head">
-            <h2>Barangay Profile</h2>
-        </div>
-        <dl class="fact-grid">
-            <div><dt>2020 Population</dt><dd>{{ profile.population_2020 }}</dd></div>
-            <div><dt>Postal Code</dt><dd>{{ profile.postal_code }}</dd></div>
-            <div><dt>PSGC Code</dt><dd>{{ profile.psgc_code }}</dd></div>
-            <div><dt>Correspondence</dt><dd>{{ profile.correspondence_code }}</dd></div>
-            <div><dt>Coordinates</dt><dd>{{ profile.coordinates }}</dd></div>
-            <div><dt>City Population</dt><dd>{{ profile.city_population_2020 }}</dd></div>
-        </dl>
-    </div>
-
-    <div class="panel">
-        <div class="section-head">
-            <h2>Active Services</h2>
-            <a href="{% url 'barangay:service_list' %}">View all</a>
-        </div>
-        <div class="compact-list">
-            {% for service in services %}
-                <a class="compact-row" href="{% url 'barangay:service_update' service.pk %}">
-                    <span><strong>{{ service.name }}</strong></span>
-                    <small>{{ service.processing_days }} day{{ service.processing_days|pluralize }}</small>
-                </a>
-            {% empty %}
-                <p class="empty-state">No services recorded.</p>
-            {% endfor %}
-        </div>
     </div>
 </section>
 
@@ -222,6 +160,42 @@
                 </a>
             {% empty %}
                 <p class="empty-state">No announcements posted.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="content-grid two-columns">
+    <div class="panel">
+        <div class="section-head">
+            <h2>Upcoming Events</h2>
+            <a href="{% url 'barangay:event_list' %}">View all</a>
+        </div>
+        <div class="compact-list">
+            {% for event in events %}
+                <a class="compact-row" href="{% url 'barangay:event_detail' event.pk %}">
+                    <span><strong>{{ event.title }}</strong><br>{{ event.venue }}</span>
+                    <small class="badge status-{{ event.status|slugify }}">{{ event.status }}</small>
+                </a>
+            {% empty %}
+                <p class="empty-state">No events scheduled.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="section-head">
+            <h2>Active Services</h2>
+            <a href="{% url 'barangay:service_list' %}">View all</a>
+        </div>
+        <div class="compact-list">
+            {% for service in services %}
+                <a class="compact-row" href="{% url 'barangay:service_update' service.pk %}">
+                    <span><strong>{{ service.name }}</strong></span>
+                    <small>{{ service.processing_days }} day{{ service.processing_days|pluralize }}</small>
+                </a>
+            {% empty %}
+                <p class="empty-state">No services recorded.</p>
             {% endfor %}
         </div>
     </div>
