@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="EventCore - Barangay San Isidro Event Management System">
-    <title>{% block title %}EventCore San Isidro{% endblock %}</title>
+    <meta name="description" content="Brgy San Isidro Surigao City, Surigao del Norte, Philippines - Event Management System">
+    <title>{% block title %}Brgy San Isidro Surigao City, Surigao del Norte, Philippines{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'eventcore/css/app.css' %}">
     <script defer src="{% static 'eventcore/js/app.js' %}"></script>
 </head>
@@ -13,11 +13,11 @@
     <div class="overlay" data-overlay aria-hidden="true"></div>
     <div class="app-shell">
         <aside class="sidebar" id="sidebar" role="navigation">
-            <a class="brand" href="{% url 'eventcore:dashboard' %}" title="EventCore Dashboard">
-                <span class="brand-mark">EC</span>
+            <a class="brand" href="{% url 'eventcore:dashboard' %}" title="Brgy San Isidro Dashboard">
+                <span class="brand-mark">SI</span>
                 <div class="brand-copy">
-                    <strong>EventCore</strong>
-                    <small>Barangay San Isidro</small>
+                    <strong>Brgy San Isidro</strong>
+                    <small>Surigao City, Surigao del Norte, Philippines</small>
                 </div>
             </a>
             {% if request.user.is_authenticated %}
@@ -37,7 +37,7 @@
                 </nav>
                 <div class="side-card">
                     <span>Workspace</span>
-                    <strong>Surigao City, Surigao del Norte</strong>
+                    <strong>Surigao City, Surigao del Norte, Philippines</strong>
                 </div>
             {% else %}
                 <div class="side-card">
@@ -49,8 +49,8 @@
         <div class="workspace">
             <header class="topbar" role="banner">
                 <div>
-                    <span>Barangay San Isidro</span>
-                    <strong>Event Management System</strong>
+                    <span>Brgy San Isidro</span>
+                    <strong>Surigao City, Surigao del Norte, Philippines</strong>
                 </div>
                 <button class="drawer-toggle" data-drawer-toggle aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="sidebar">Menu</button>
                 <nav class="top-actions" role="menubar">
@@ -76,7 +76,7 @@
                 {% block content %}{% endblock %}
             </main>
             <footer class="footer" role="contentinfo">
-                <span>&copy; Barangay San Isidro, Surigao City, Surigao del Norte</span>
+                <span>&copy; Brgy San Isidro, Surigao City, Surigao del Norte, Philippines</span>
                 <span>{% now "M d, Y" %}</span>
             </footer>
         </div>

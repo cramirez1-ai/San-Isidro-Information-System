@@ -1,6 +1,6 @@
-# EventCore San Isidro
+# Brgy San Isidro Surigao City, Surigao del Norte, Philippines
 
-EventCore is a Django-based barangay event management system for Barangay San Isidro, Surigao City, Surigao del Norte.
+Brgy San Isidro Surigao City, Surigao del Norte, Philippines is a Django-based barangay event management system for Brgy San Isidro, Surigao City, Surigao del Norte, Philippines.
 
 ## Features
 
@@ -10,7 +10,7 @@ EventCore is a Django-based barangay event management system for Barangay San Is
 - Budget line items with planned, approved, released, and liquidated status
 - Announcements for public advisories and event notices
 - Dashboard metrics for upcoming events, active attendees, resource readiness, and budget totals
-- Clean responsive interface with a dedicated EventCore command center
+- Clean responsive interface with a dedicated Brgy San Isidro coordination center
 - Django admin support for all records
 - PostgreSQL database configuration, not SQLite
 

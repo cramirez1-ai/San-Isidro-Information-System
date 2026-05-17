@@ -7,7 +7,7 @@ from eventcore.models import Announcement, Attendee, BudgetItem, Department, Eve
 
 
 class Command(BaseCommand):
-    help = "Create starter EventCore data for Barangay San Isidro."
+    help = "Create starter barangay data for Barangay San Isidro."
 
     def handle(self, *args, **options):
         departments = [
@@ -92,4 +92,4 @@ class Command(BaseCommand):
             },
         )
 
-        self.stdout.write(self.style.SUCCESS("EventCore starter data is ready."))
+        self.stdout.write(self.style.SUCCESS("Brgy San Isidro starter data is ready."))

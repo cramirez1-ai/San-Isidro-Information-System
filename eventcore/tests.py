@@ -8,7 +8,7 @@ from django.utils import timezone
 from .models import Attendee, Event, Venue
 
 
-class EventCoreTests(TestCase):
+class BarangaySanIsidroTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="clerk", password="StrongPass123!")
         self.venue = Venue.objects.create(name="Barangay Hall", capacity=100)

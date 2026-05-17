@@ -35,7 +35,7 @@ BARANGAY_PROFILE = {
     "city": "Surigao City",
     "province": "Surigao del Norte",
     "region": "Caraga",
-    "tagline": "EventCore command center for public programs, logistics, and community coordination.",
+    "tagline": "Brgy San Isidro coordination center for public programs, logistics, and community coordination.",
 }
 
 
@@ -61,7 +61,7 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         login(self.request, self.object)
-        messages.success(self.request, "Account created. Welcome to EventCore.")
+        messages.success(self.request, "Account created. Welcome to Brgy San Isidro.")
         return response
 
 
@@ -722,7 +722,7 @@ def export_event_ical(request, pk):
     lines = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//Barangay EventCore//EN",
+        "PRODID:-//Brgy San Isidro//EN",
         "BEGIN:VEVENT",
         f"UID:{event.pk}@eventcore.barangay",
         f"DTSTART:{ical_dt(event.start_at)}",

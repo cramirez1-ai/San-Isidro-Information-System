@@ -5,9 +5,9 @@ from django.db.models import Sum
 from .models import Announcement, Attendee, BudgetItem, Department, Event, Resource, Venue, Volunteer, Feedback
 
 # Admin Site Title
-admin.site.site_header  = "Barangay EventCore Administration"
-admin.site.site_title   = "EventCore Admin"
-admin.site.index_title  = "Barangay San Isidro — Event Management System"
+admin.site.site_header  = "Brgy San Isidro Administration"
+admin.site.site_title   = "Brgy San Isidro Admin"
+admin.site.index_title  = "Brgy San Isidro Surigao City, Surigao del Norte, Philippines"
 
 
 class AttendeeInline(admin.TabularInline):
