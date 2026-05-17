@@ -58,6 +58,8 @@ Manual Render settings, if you deploy without the Blueprint:
   - `ALLOWED_HOSTS=.onrender.com`
   - `DATABASE_URL=<your Render PostgreSQL internal connection string>`
 
+Do not set `DATABASE_URL` to a placeholder such as `://`. Leave it blank for local SQLite, or use the full Render PostgreSQL internal connection string that starts with `postgres://` or `postgresql://`.
+
 After the first deploy, create an admin user from Render Shell:
 
 ```bash

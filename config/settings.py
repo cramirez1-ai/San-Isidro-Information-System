@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import dj_database_url
 
@@ -78,10 +79,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DEFAULT_DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.sqlite3")
 DEFAULT_DB_NAME = os.getenv("DB_NAME", "db.sqlite3")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+DATABASE_URL_SCHEME = urlparse(DATABASE_URL).scheme
 
-if os.getenv("DATABASE_URL"):
+if DATABASE_URL and DATABASE_URL_SCHEME:
     DATABASES = {
         "default": dj_database_url.config(
+            default=DATABASE_URL,
             conn_max_age=600,
             conn_health_checks=True,
             ssl_require=not DEBUG,
