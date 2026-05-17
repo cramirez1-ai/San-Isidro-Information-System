@@ -6,8 +6,7 @@ services:
     buildCommand: "bash build_files.sh"
     startCommand: "python manage.py migrate --noinput && python manage.py setup_admin && gunicorn config.wsgi:application"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+
       - key: ENVIRONMENT
         value: production
       - key: DEBUG
