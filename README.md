@@ -60,6 +60,8 @@ Manual Render settings, if you deploy without the Blueprint:
 
 Do not set `DATABASE_URL` to a placeholder such as `://`. Leave it blank for local SQLite, or use the full Render PostgreSQL internal connection string that starts with `postgres://` or `postgresql://`.
 
+If Render still shows `gunicorn your_application.wsgi` in the logs, update the service Start Command to `gunicorn config.wsgi:application` and redeploy.
+
 After the first deploy, create an admin user from Render Shell:
 
 ```bash
