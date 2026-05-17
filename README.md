@@ -10,7 +10,7 @@ A Django project for Barangay San Isidro, Surigao City, Surigao del Norte.
 - Barangay services and service requests
 - Announcements
 - Blotter incident records
-- Django admin support
+- Single administrator workspace
 
 ## Barangay Reference Data
 
@@ -36,10 +36,13 @@ Open:
 http://127.0.0.1:8000/
 ```
 
-Create an admin account:
+Create the administrator account:
 
 ```powershell
-python manage.py createsuperuser
+$env:ADMIN_USERNAME="admin"
+$env:ADMIN_EMAIL="admin@sanisidro.local"
+$env:ADMIN_PASSWORD="change-this-password"
+python manage.py setup_admin
 ```
 
 Admin URL:
@@ -50,25 +53,31 @@ http://127.0.0.1:8000/admin/
 
 ## Notes
 
-The seed command adds starter services and one clearly marked sample announcement. Replace sample content with official barangay data before real use.
+The seed command adds starter services and one clearly marked sample announcement. Replace sample content with official barangay data before real use. Self-registration is disabled; only the configured administrator account can use the workspace.
 
-## Deploy on Vercel
+## Deploy on Render
 
-This project includes a Vercel-ready structure:
+This project includes a Render-ready structure:
 
-- `vercel.json` configures install, build, and dev commands.
-- `build_files.sh` runs `collectstatic` and migrations during deployment.
+- `render.yaml` defines the web service, PostgreSQL database, build command, and start command.
+- `build_files.sh` runs Django deployment checks and collects static files.
+- `gunicorn` serves the Django app.
+- `whitenoise` serves static files in production.
 - `.python-version` pins Python 3.12 for Django 6.
-- `.vercelignore` keeps local files out of the deployment bundle.
 
-Set these environment variables in Vercel Project Settings:
+Set `ADMIN_PASSWORD` in Render before the first deploy. Render will generate `SECRET_KEY` and connect `DATABASE_URL` automatically from `render.yaml`.
+
+Important Render environment variables:
 
 ```text
 SECRET_KEY=your-secure-secret-key
 DEBUG=False
 DATABASE_URL=your-postgres-database-url
-ALLOWED_HOSTS=.vercel.app,your-domain.com
-CSRF_TRUSTED_ORIGINS=https://*.vercel.app,https://your-domain.com
+ALLOWED_HOSTS=.onrender.com,your-domain.com
+CSRF_TRUSTED_ORIGINS=https://*.onrender.com,https://your-domain.com
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@sanisidro.local
+ADMIN_PASSWORD=your-secure-admin-password
 ```
 
-Use an external PostgreSQL database for production. SQLite is only for local development.
+Use PostgreSQL for production. SQLite is only for local development.

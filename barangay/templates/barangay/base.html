@@ -80,7 +80,7 @@
                 <div class="auth-side-note">
                     <span class="side-badge">Secure Access</span>
                     <strong>Barangay records stay protected behind user accounts.</strong>
-                    <small>Login or register to continue to the information system.</small>
+                    <small>Login with the barangay administrator account to continue.</small>
                 </div>
             {% endif %}
         </aside>
@@ -114,7 +114,6 @@
                     </a>
                     <nav class="top-actions auth-top-actions" aria-label="Account links">
                         <a href="{% url 'barangay:login' %}">Login</a>
-                        <a href="{% url 'barangay:register' %}">Register</a>
                     </nav>
                 {% endif %}
             </header>
@@ -122,7 +121,7 @@
             {% if not request.user.is_authenticated %}
                 <div class="auth-ribbon">
                     <span><strong>Barangay San Isidro, Surigao City, Surigao del Norte</strong> information system for resident, household, request, and office records.</span>
-                    <span>Login or register to continue.</span>
+                    <span>Administrator login is required to continue.</span>
                 </div>
             {% endif %}
 

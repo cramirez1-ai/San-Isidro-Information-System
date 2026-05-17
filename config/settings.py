@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import importlib.util
 import os
+from urllib.parse import urlparse
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,8 +28,7 @@ SECRET_KEY = os.getenv(
     "django-insecure-o2!t-i$h9#*2rl)d1*n05k$$)@fer1y_!%xnf-+@nz$t*9$2%m",
 )
 
-IS_VERCEL = os.getenv("VERCEL") == "1"
-IS_PRODUCTION = IS_VERCEL or os.getenv("ENVIRONMENT", "").lower() == "production"
+IS_PRODUCTION = os.getenv("RENDER") == "true" or os.getenv("ENVIRONMENT", "").lower() == "production"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = (
@@ -40,15 +41,24 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "ALLOWED_HOSTS",
-        ".vercel.app,127.0.0.1,localhost,testserver",
+        ".onrender.com,127.0.0.1,localhost,testserver",
     ).split(",")
     if host.strip()
 ]
+
+render_external_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if render_external_hostname and render_external_hostname not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_external_hostname)
+
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
-    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "https://*.vercel.app").split(",")
+    for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "https://*.onrender.com").split(",")
     if origin.strip()
 ]
+if render_external_hostname:
+    render_origin = f"https://{render_external_hostname}"
+    if render_origin not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_origin)
 INTERNAL_IPS = ["127.0.0.1"]
 
 
@@ -73,6 +83,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if importlib.util.find_spec("whitenoise"):
+    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 ROOT_URLCONF = 'config.urls'
 
@@ -101,7 +114,7 @@ DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.sqlite3")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
-    from urllib.parse import unquote, urlparse
+    from urllib.parse import unquote
 
     parsed_database = urlparse(DATABASE_URL)
     DATABASES = {
@@ -115,6 +128,13 @@ if DATABASE_URL:
             "OPTIONS": {"sslmode": "require"},
         }
     }
+elif IS_PRODUCTION and DB_ENGINE != "django.db.backends.sqlite3" and not os.getenv("DB_HOST"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 elif DB_ENGINE == "django.db.backends.sqlite3":
     DATABASES = {
         "default": {
@@ -123,13 +143,14 @@ elif DB_ENGINE == "django.db.backends.sqlite3":
         }
     }
 else:
+    db_host = os.getenv("DB_HOST", "")
     DATABASES = {
         "default": {
             "ENGINE": DB_ENGINE,
             "NAME": os.getenv("DB_NAME", "eventcore_san_isidro"),
             "USER": os.getenv("DB_USER", "postgres"),
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DB_HOST", "127.0.0.1"),
+            "HOST": db_host or "127.0.0.1",
             "PORT": os.getenv("DB_PORT", "5432"),
         }
     }
@@ -193,6 +214,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'barangay:login'
 LOGIN_REDIRECT_URL = 'barangay:dashboard'
 LOGOUT_REDIRECT_URL = 'barangay:login'
+
+SESSION_COOKIE_SECURE = IS_PRODUCTION
+CSRF_COOKIE_SECURE = IS_PRODUCTION
+SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True" if IS_PRODUCTION else "False").lower() == "true"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = int(os.getenv("SECURE_HSTS_SECONDS", "31536000" if IS_PRODUCTION else "0"))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = os.getenv("SECURE_HSTS_INCLUDE_SUBDOMAINS", "False").lower() == "true"
+SECURE_HSTS_PRELOAD = os.getenv("SECURE_HSTS_PRELOAD", "False").lower() == "true"
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = BASE_DIR / 'sent_emails'

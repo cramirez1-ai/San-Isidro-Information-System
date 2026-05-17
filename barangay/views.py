@@ -1,6 +1,5 @@
 from django.contrib import messages
-from django.contrib.auth import login
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.urls import reverse_lazy
@@ -22,7 +21,6 @@ from .forms import (
     ResidentNotificationForm,
     ServiceForm,
     ServiceRequestForm,
-    UserRegistrationForm,
 )
 from .models import (
     Announcement,
@@ -59,6 +57,11 @@ BARANGAY_PROFILE = {
 }
 
 
+class AdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff
+
+
 def apply_search(queryset, query, fields):
     if not query:
         return queryset
@@ -68,19 +71,7 @@ def apply_search(queryset, query, fields):
     return queryset.filter(condition)
 
 
-class RegisterView(CreateView):
-    form_class = UserRegistrationForm
-    template_name = "registration/register.html"
-    success_url = reverse_lazy("barangay:dashboard")
-
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        login(self.request, self.object)
-        messages.success(self.request, "Account created. Welcome to the system.")
-        return response
-
-
-class DashboardView(LoginRequiredMixin, TemplateView):
+class DashboardView(AdminRequiredMixin, TemplateView):
     template_name = "barangay/dashboard.html"
 
     def get_context_data(self, **kwargs):
@@ -109,7 +100,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class SavedMessageMixin(LoginRequiredMixin):
+class SavedMessageMixin(AdminRequiredMixin):
     success_url = reverse_lazy("barangay:dashboard")
     success_message = "Record saved."
 
@@ -125,7 +116,7 @@ class SavedMessageMixin(LoginRequiredMixin):
         return response
 
 
-class HouseholdListView(LoginRequiredMixin, ListView):
+class HouseholdListView(AdminRequiredMixin, ListView):
     model = Household
     template_name = "barangay/household_list.html"
     context_object_name = "households"
@@ -182,7 +173,7 @@ class HouseholdUpdateView(HouseholdCreateView, UpdateView):
         return context
 
 
-class ResidentListView(LoginRequiredMixin, ListView):
+class ResidentListView(AdminRequiredMixin, ListView):
     model = Resident
     template_name = "barangay/resident_list.html"
     context_object_name = "residents"
@@ -213,7 +204,7 @@ class ResidentListView(LoginRequiredMixin, ListView):
         return context
 
 
-class ResidentDetailView(LoginRequiredMixin, DetailView):
+class ResidentDetailView(AdminRequiredMixin, DetailView):
     model = Resident
     template_name = "barangay/resident_detail.html"
     context_object_name = "resident"
@@ -240,7 +231,7 @@ class ResidentUpdateView(ResidentCreateView, UpdateView):
         return context
 
 
-class OfficialListView(LoginRequiredMixin, ListView):
+class OfficialListView(AdminRequiredMixin, ListView):
     model = BarangayOfficial
     template_name = "barangay/official_list.html"
     context_object_name = "officials"
@@ -267,7 +258,7 @@ class OfficialUpdateView(OfficialCreateView, UpdateView):
         return context
 
 
-class ServiceListView(LoginRequiredMixin, ListView):
+class ServiceListView(AdminRequiredMixin, ListView):
     model = Service
     template_name = "barangay/service_list.html"
     context_object_name = "services"
@@ -294,7 +285,7 @@ class ServiceUpdateView(ServiceCreateView, UpdateView):
         return context
 
 
-class RequestListView(LoginRequiredMixin, ListView):
+class RequestListView(AdminRequiredMixin, ListView):
     model = ServiceRequest
     template_name = "barangay/request_list.html"
     context_object_name = "requests"
@@ -341,7 +332,7 @@ class RequestUpdateView(RequestCreateView, UpdateView):
         return context
 
 
-class CertificateListView(LoginRequiredMixin, ListView):
+class CertificateListView(AdminRequiredMixin, ListView):
     model = Certificate
     template_name = "barangay/certificate_list.html"
     context_object_name = "certificates"
@@ -402,7 +393,7 @@ class CertificateUpdateView(CertificateCreateView, UpdateView):
         return context
 
 
-class AnnouncementListView(LoginRequiredMixin, ListView):
+class AnnouncementListView(AdminRequiredMixin, ListView):
     model = Announcement
     template_name = "barangay/announcement_list.html"
     context_object_name = "announcements"
@@ -429,7 +420,7 @@ class AnnouncementUpdateView(AnnouncementCreateView, UpdateView):
         return context
 
 
-class EventListView(LoginRequiredMixin, ListView):
+class EventListView(AdminRequiredMixin, ListView):
     model = Event
     template_name = "barangay/event_list.html"
     context_object_name = "events"
@@ -465,7 +456,7 @@ class EventListView(LoginRequiredMixin, ListView):
         return context
 
 
-class EventDetailView(LoginRequiredMixin, DetailView):
+class EventDetailView(AdminRequiredMixin, DetailView):
     model = Event
     template_name = "barangay/event_detail.html"
     context_object_name = "event"
@@ -551,7 +542,7 @@ class EventResourceCreateView(SavedMessageMixin, CreateView):
         return context
 
 
-class BlotterListView(LoginRequiredMixin, ListView):
+class BlotterListView(AdminRequiredMixin, ListView):
     model = BlotterIncident
     template_name = "barangay/blotter_list.html"
     context_object_name = "incidents"
@@ -614,7 +605,7 @@ class BlotterUpdateView(BlotterCreateView, UpdateView):
         return context
 
 
-class ReportsView(LoginRequiredMixin, TemplateView):
+class ReportsView(AdminRequiredMixin, TemplateView):
     template_name = "barangay/reports.html"
 
     def get_context_data(self, **kwargs):
@@ -638,7 +629,7 @@ class ReportsView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class UserListView(LoginRequiredMixin, ListView):
+class UserListView(AdminRequiredMixin, ListView):
     model = User
     template_name = "barangay/user_list.html"
     context_object_name = "users"
@@ -647,7 +638,7 @@ class UserListView(LoginRequiredMixin, ListView):
         return User.objects.order_by("-is_superuser", "-is_staff", "username")
 
 
-class SettingsView(LoginRequiredMixin, UpdateView):
+class SettingsView(AdminRequiredMixin, UpdateView):
     model = BarangayProfile
     form_class = BarangayProfileForm
     template_name = "barangay/form.html"
@@ -675,7 +666,7 @@ class SettingsView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class HealthRecordListView(LoginRequiredMixin, ListView):
+class HealthRecordListView(AdminRequiredMixin, ListView):
     model = HealthRecord
     template_name = "barangay/health_record_list.html"
     context_object_name = "records"
@@ -722,7 +713,7 @@ class HealthRecordUpdateView(HealthRecordCreateView, UpdateView):
         return context
 
 
-class ProjectListView(LoginRequiredMixin, ListView):
+class ProjectListView(AdminRequiredMixin, ListView):
     model = Project
     template_name = "barangay/project_list.html"
     context_object_name = "projects"
@@ -769,7 +760,7 @@ class ProjectUpdateView(ProjectCreateView, UpdateView):
         return context
 
 
-class NotificationListView(LoginRequiredMixin, ListView):
+class NotificationListView(AdminRequiredMixin, ListView):
     model = ResidentNotification
     template_name = "barangay/notification_list.html"
     context_object_name = "notifications"
@@ -797,7 +788,7 @@ class NotificationUpdateView(NotificationCreateView, UpdateView):
         return context
 
 
-class AuditLogListView(LoginRequiredMixin, ListView):
+class AuditLogListView(AdminRequiredMixin, ListView):
     model = AuditLog
     template_name = "barangay/audit_log_list.html"
     context_object_name = "logs"

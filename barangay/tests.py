@@ -12,6 +12,7 @@ class DashboardTests(TestCase):
             username="barangay_user",
             email="user@example.com",
             password="StrongPass123!",
+            is_staff=True,
         )
         self.client.force_login(self.user)
 
@@ -66,7 +67,6 @@ class UserAuthTests(TestCase):
     def test_auth_pages_load(self):
         urls = [
             reverse("barangay:login"),
-            reverse("barangay:register"),
             reverse("barangay:password_reset"),
             reverse("barangay:password_reset_done"),
             reverse("barangay:password_reset_complete"),
@@ -76,21 +76,17 @@ class UserAuthTests(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, 200)
 
-    def test_register_creates_regular_user(self):
-        response = self.client.post(
-            reverse("barangay:register"),
-            {
-                "username": "clerk",
-                "email": "clerk@example.com",
-                "password1": "StrongPass123!",
-                "password2": "StrongPass123!",
-            },
+    def test_regular_users_cannot_open_admin_workspace(self):
+        user = User.objects.create_user(
+            username="clerk",
+            email="clerk@example.com",
+            password="StrongPass123!",
         )
-        self.assertRedirects(response, reverse("barangay:dashboard"))
+        self.client.force_login(user)
 
-        user = User.objects.get(username="clerk")
-        self.assertFalse(user.is_staff)
-        self.assertFalse(user.is_superuser)
+        response = self.client.get(reverse("barangay:dashboard"))
+
+        self.assertEqual(response.status_code, 403)
 
 
 class RecordNumberTests(TestCase):
