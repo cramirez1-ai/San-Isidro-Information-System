@@ -1,0 +1,88 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="EventCore - Barangay San Isidro Event Management System">
+    <title>{% block title %}EventCore San Isidro{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'eventcore/css/app.css' %}">
+    <script defer src="{% static 'eventcore/js/app.js' %}"></script>
+</head>
+<body class="{% if not request.user.is_authenticated %}auth-page{% endif %}">
+    <div class="overlay" data-overlay aria-hidden="true"></div>
+    <div class="app-shell">
+        <aside class="sidebar" id="sidebar" role="navigation">
+            <a class="brand" href="{% url 'eventcore:dashboard' %}" title="EventCore Dashboard">
+                <span class="brand-mark">EC</span>
+                <div class="brand-copy">
+                    <strong>EventCore</strong>
+                    <small>Barangay San Isidro</small>
+                </div>
+            </a>
+            {% if request.user.is_authenticated %}
+                <nav class="side-nav" role="menubar">
+                    <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'eventcore:dashboard' %}" role="menuitem" title="Dashboard"><span class="nav-icon">01</span> Dashboard</a>
+                    <a class="{% if '/calendar/' in request.path %}active{% endif %}" href="{% url 'eventcore:calendar' %}" role="menuitem" title="Calendar"><span class="nav-icon">02</span> Calendar</a>
+                    <a class="{% if '/search/' in request.path %}active{% endif %}" href="{% url 'eventcore:search' %}" role="menuitem" title="Search"><span class="nav-icon">03</span> Search</a>
+                    <a class="{% if '/events/' in request.path and '/calendar/' not in request.path and '/search/' not in request.path %}active{% endif %}" href="{% url 'eventcore:event_list' %}" role="menuitem" title="Events"><span class="nav-icon">04</span> Events</a>
+                    <a class="{% if '/announcements/' in request.path %}active{% endif %}" href="{% url 'eventcore:announcement_list' %}" role="menuitem" title="Announcements"><span class="nav-icon">05</span> Notices</a>
+                    <a class="{% if '/venues/' in request.path %}active{% endif %}" href="{% url 'eventcore:venue_list' %}" role="menuitem" title="Venues"><span class="nav-icon">06</span> Venues</a>
+                    <a class="{% if '/departments/' in request.path %}active{% endif %}" href="{% url 'eventcore:department_list' %}" role="menuitem" title="Departments"><span class="nav-icon">07</span> Departments</a>
+                    <a class="{% if '/volunteers/' in request.path %}active{% endif %}" href="{% url 'eventcore:volunteer_list' %}" role="menuitem" title="Volunteers"><span class="nav-icon">08</span> Volunteers</a>
+                    <a class="{% if '/feedback/' in request.path %}active{% endif %}" href="{% url 'eventcore:feedback_list' %}" role="menuitem" title="Feedback"><span class="nav-icon">09</span> Feedback</a>
+                    <a class="{% if '/reports/' in request.path %}active{% endif %}" href="{% url 'eventcore:reports' %}" role="menuitem" title="Reports"><span class="nav-icon">10</span> Reports</a>
+                    <a class="{% if '/participants/' in request.path %}active{% endif %}" href="{% url 'eventcore:participant_list' %}" role="menuitem"><span class="nav-icon">11</span> Participants</a>
+                    {% if request.user.is_staff %}<a href="{% url 'admin:index' %}" role="menuitem" title="Admin"><span class="nav-icon">AD</span> Admin</a>{% endif %}
+                </nav>
+                <div class="side-card">
+                    <span>Workspace</span>
+                    <strong>Surigao City, Surigao del Norte</strong>
+                </div>
+            {% else %}
+                <div class="side-card">
+                    <span>Secure Access</span>
+                    <strong>Login to manage events, budgets, logistics, and public notices.</strong>
+                </div>
+            {% endif %}
+        </aside>
+        <div class="workspace">
+            <header class="topbar" role="banner">
+                <div>
+                    <span>Barangay San Isidro</span>
+                    <strong>Event Management System</strong>
+                </div>
+                <button class="drawer-toggle" data-drawer-toggle aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="sidebar">Menu</button>
+                <nav class="top-actions" role="menubar">
+                    {% if request.user.is_authenticated %}
+                        <span class="user-chip" role="status">{{ request.user.username }}</span>
+                        <a class="btn secondary" href="{% url 'eventcore:event_create' %}" role="menuitem">New Event</a>
+                        <form class="logout-form" method="post" action="{% url 'eventcore:logout' %}">
+                            {% csrf_token %}
+                            <button class="btn ghost" type="submit" role="menuitem">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'eventcore:login' %}" class="btn secondary">Login</a>
+                        <a href="{% url 'eventcore:register' %}" class="btn primary">Register</a>
+                    {% endif %}
+                </nav>
+            </header>
+            {% if messages %}
+                <div class="messages" role="status" aria-live="polite">
+                    {% for message in messages %}<div class="message" role="alert">{{ message }}</div>{% endfor %}
+                </div>
+            {% endif %}
+            <main class="page" role="main">
+                {% block content %}{% endblock %}
+            </main>
+            <footer class="footer" role="contentinfo">
+                <span>&copy; Barangay San Isidro, Surigao City, Surigao del Norte</span>
+                <span>{% now "M d, Y" %}</span>
+            </footer>
+        </div>
+    </div>
+    <div class="loading-overlay" role="progressbar" aria-live="polite" aria-label="Loading content...">
+        <div class="loading-spinner" role="status"></div>
+    </div>
+</body>
+</html>

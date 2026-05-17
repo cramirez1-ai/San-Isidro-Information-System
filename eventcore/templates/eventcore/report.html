@@ -1,0 +1,70 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<div class="page-title">
+  <div>
+    <p class="eyebrow">Level 3 Feature</p>
+    <h1>Financial & Event Reports</h1>
+    <p>Complete summary of all barangay events, attendance, and budget.</p>
+  </div>
+  <a href="{% url 'eventcore:export_csv' %}" class="btn primary">Export CSV</a>
+</div>
+
+<div class="stats-grid">
+  <article><span>Total Events</span><strong>{{ total_events }}</strong></article>
+  <article><span>Completed</span><strong>{{ completed }}</strong></article>
+  <article><span>Total Attendees</span><strong>{{ total_attendees }}</strong></article>
+  <article><span>Total Volunteers</span><strong>{{ total_volunteers }}</strong></article>
+  <article><span>Total Budget</span><strong>PHP {{ total_budget|floatformat:2 }}</strong></article>
+</div>
+
+<div class="panel">
+  <div class="section-head">
+    <h2>Events by Category</h2>
+  </div>
+  <div class="facts">
+    {% for cat in category_counts %}
+    <div>
+      <dt>{{ cat.category }}</dt>
+      <dd>{{ cat.total }} events</dd>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="panel">
+  <div class="section-head">
+    <h2>All Events Report</h2>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Event</th>
+          <th>Category</th>
+          <th>Venue</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Attendees</th>
+          <th>Budget (PHP)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for event in events %}
+        <tr>
+          <td><a href="{% url 'eventcore:event_detail' event.pk %}">{{ event.title }}</a></td>
+          <td>{{ event.get_category_display }}</td>
+          <td>{{ event.venue.name|default:"—" }}</td>
+          <td>{{ event.start_at|date:"M d, Y" }}</td>
+          <td><span class="badge {{ event.status|lower }}">{{ event.get_status_display }}</span></td>
+          <td>{{ event.attendee_count|default:0 }}</td>
+          <td>{{ event.budget_total|floatformat:2|default:"0.00" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="empty">No events found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

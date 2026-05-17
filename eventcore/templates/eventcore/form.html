@@ -1,0 +1,29 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">Record Form</p>
+        <h1>{{ title }}</h1>
+        <p>Complete the details and save the record to EventCore.</p>
+    </div>
+    <a class="btn secondary" href="{{ back_url }}">Back</a>
+</section>
+
+<form class="record-form" method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="field{% if field.errors %} error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}<strong>{{ error }}</strong>{% endfor %}
+        </div>
+    {% endfor %}
+    {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+<div class="filter-row">
+        <button class="btn primary" type="submit">Save Record</button>
+        <a class="btn secondary" href="{{ back_url }}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

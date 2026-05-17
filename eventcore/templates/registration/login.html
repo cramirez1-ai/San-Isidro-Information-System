@@ -1,0 +1,14 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="auth-card">
+    <p class="eyebrow">Secure Access</p>
+    <h1>Login to EventCore</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn primary" type="submit">Login</button>
+    </form>
+    <p>No account yet? <a href="{% url 'eventcore:register' %}">Register</a></p>
+</section>
+{% endblock %}

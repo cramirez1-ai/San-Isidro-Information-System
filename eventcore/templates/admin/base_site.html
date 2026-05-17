@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  /* Header */
+  #header {
+    background: #052e16 !important;
+    color: #fff !important;
+  }
+  #header a:link, #header a:visited {
+    color: #bbf7d0 !important;
+  }
+  #branding h1, #branding h1 a {
+    color: #fff !important;
+    font-weight: 900 !important;
+  }
+
+  /* Nav top bar */
+  div#user-tools {
+    color: #bbf7d0 !important;
+  }
+  div#user-tools a {
+    color: #bbf7d0 !important;
+    border-color: rgba(255,255,255,0.3) !important;
+  }
+
+  /* Module headers (BARANGAY EVENTCORE, AUTH) */
+  .module caption, thead th {
+    background: #15803d !important;
+    color: #fff !important;
+  }
+
+  /* Links */
+  a:link, a:visited {
+    color: #15803d !important;
+  }
+
+  /* Buttons */
+  .button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: #15803d !important;
+    border-color: #052e16 !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+  }
+  .button:hover, input[type=submit]:hover {
+    background: #052e16 !important;
+  }
+
+  /* Sidebar / content area */
+  #nav-sidebar {
+    background: #052e16 !important;
+  }
+  #nav-sidebar a {
+    color: rgba(255,255,255,0.8) !important;
+  }
+  #nav-sidebar .current-app .section:link,
+  #nav-sidebar .current-app .section:visited {
+    color: #bbf7d0 !important;
+  }
+
+  /* Index sections */
+  .app-eventcore .section {
+    background: #f0fdf4 !important;
+  }
+
+  /* Change list selected row */
+  tr.selected {
+    background: #dcfce7 !important;
+  }
+
+  /* Pagination */
+  .paginator a:link, .paginator a:visited {
+    background: #15803d !important;
+    color: #fff !important;
+    border-radius: 6px !important;
+  }
+</style>
+{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}">
+    🌿 Barangay EventCore
+  </a>
+</h1>
+{% endblock %}

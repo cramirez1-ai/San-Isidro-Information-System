@@ -1,0 +1,57 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<div class="page-title">
+  <div>
+    <p class="eyebrow">Level 3 Feature</p>
+    <h1>Volunteer Management</h1>
+    <p>Track and manage all barangay event volunteers.</p>
+  </div>
+  <a href="{% url 'eventcore:dashboard' %}" class="btn secondary">Back</a>
+</div>
+
+{% if volunteers %}
+<div class="event-grid">
+  {% for vol in volunteers %}
+  <div class="event-card">
+    <div class="event-top">
+      <span class="badge {{ vol.status|lower }}">{{ vol.get_status_display }}</span>
+      <span>{{ vol.event.title|truncatewords:4 }}</span>
+    </div>
+    <h2>{{ vol.full_name }}</h2>
+    <dl>
+      <div><dt>Role</dt><dd>{{ vol.role|default:"—" }}</dd></div>
+      <div><dt>Purok</dt><dd>{{ vol.purok|default:"—" }}</dd></div>
+      <div><dt>Contact</dt><dd>{{ vol.contact_number|default:"—" }}</dd></div>
+      <div><dt>Event</dt><dd>{{ vol.event.title }}</dd></div>
+    </dl>
+    <footer>
+      <a href="{% url 'eventcore:volunteer_update' vol.pk %}">Edit</a>
+      <a href="{% url 'eventcore:volunteer_delete' vol.pk %}" class="danger-link">Delete</a>
+    </footer>
+  </div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+  {% if page_obj.has_previous %}
+  <a href="?page={{ page_obj.previous_page_number }}">← Prev</a>
+  {% endif %}
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-mark">VL</div>
+  <h2>No Volunteers Yet</h2>
+  <p>Add volunteers from any event's detail page.</p>
+  <a href="{% url 'eventcore:event_list' %}" class="btn primary">Go to Events</a>
+</div>
+{% endif %}
+
+{% endblock %}

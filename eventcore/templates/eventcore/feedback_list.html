@@ -1,0 +1,63 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<div class="page-title">
+  <div>
+    <p class="eyebrow">Level 3 Feature</p>
+    <h1>Feedback & Evaluation</h1>
+    <p>Community feedback and ratings for all barangay events.</p>
+  </div>
+  <a href="{% url 'eventcore:dashboard' %}" class="btn secondary">Back</a>
+</div>
+
+{% if feedbacks %}
+<div class="event-grid">
+  {% for fb in feedbacks %}
+  <div class="event-card">
+    <div class="event-top">
+      <span class="badge ongoing">⭐ {{ fb.rating }}/5</span>
+      <span>{{ fb.get_rating_display }}</span>
+    </div>
+    <h2>{{ fb.event.title }}</h2>
+    <dl>
+      <div>
+        <dt>Respondent</dt>
+        <dd>{{ fb.respondent_name|default:"Anonymous" }}</dd>
+      </div>
+      <div>
+        <dt>Submitted</dt>
+        <dd>{{ fb.submitted_at|date:"M d, Y" }}</dd>
+      </div>
+    </dl>
+    {% if fb.comments %}
+    <p>{{ fb.comments }}</p>
+    {% endif %}
+    <footer>
+      <a href="{% url 'eventcore:feedback_delete' fb.pk %}" class="danger-link">Delete</a>
+    </footer>
+  </div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+  {% if page_obj.has_previous %}
+  <a href="?page={{ page_obj.previous_page_number }}">← Prev</a>
+  {% endif %}
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-mark">FB</div>
+  <h2>No Feedback Yet</h2>
+  <p>Feedback submitted from event pages will appear here.</p>
+  <a href="{% url 'eventcore:event_list' %}" class="btn primary">Go to Events</a>
+</div>
+{% endif %}
+
+{% endblock %}

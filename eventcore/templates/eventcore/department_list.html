@@ -1,0 +1,28 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div><p class="eyebrow">Teams</p><h1>Departments</h1><p>Track barangay committees and focal persons responsible for events.</p></div>
+    <a class="btn primary" href="{% url 'eventcore:department_create' %}">New Department</a>
+</section>
+<section class="card-grid">
+    {% for department in departments %}
+        <article class="panel">
+            <div class="section-head">
+                <h2>{{ department.name }}</h2>
+                <div class="row-actions">
+                    <a href="{% url 'eventcore:department_update' department.pk %}">Edit</a>
+                    <a class="danger-link" href="{% url 'eventcore:department_delete' department.pk %}">Delete</a>
+                </div>
+            </div>
+            <p>{{ department.description|default:"No description yet." }}</p>
+            <dl class="facts one">
+                <div><dt>Focal Person</dt><dd>{{ department.focal_person|default:"Not assigned" }}</dd></div>
+                <div><dt>Contact</dt><dd>{{ department.contact_number|default:"-" }}</dd></div>
+            </dl>
+        </article>
+    {% empty %}
+        <p class="empty">No departments recorded.</p>
+    {% endfor %}
+</section>
+{% endblock %}

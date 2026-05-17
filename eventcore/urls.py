@@ -1,0 +1,56 @@
+from django.contrib.auth import views as auth_views
+from django.urls import path, reverse_lazy
+
+from . import views
+
+
+app_name = "eventcore"
+
+urlpatterns = [
+    path("accounts/login/", auth_views.LoginView.as_view(template_name="registration/login.html"), name="login"),
+    path("accounts/register/", views.RegisterView.as_view(), name="register"),
+    path("accounts/logout/", auth_views.LogoutView.as_view(next_page=reverse_lazy("eventcore:login")), name="logout"),
+    path("", views.DashboardView.as_view(), name="dashboard"),
+    path("calendar/", views.CalendarView.as_view(), name="calendar"),
+    path("search/", views.SearchView.as_view(), name="search"),
+    path("export/csv/", views.export_events_csv, name="export_csv"),
+    path("api/events/", views.api_events_json, name="api_events"),
+    path("events/", views.EventListView.as_view(), name="event_list"),
+    path("events/new/", views.EventCreateView.as_view(), name="event_create"),
+    path("events/<int:pk>/", views.EventDetailView.as_view(), name="event_detail"),
+    path("events/<int:pk>/edit/", views.EventUpdateView.as_view(), name="event_update"),
+    path("events/<int:pk>/delete/", views.EventDeleteView.as_view(), name="event_delete"),
+    path("events/<int:pk>/approve/", views.approve_event, name="event_approve"),
+    path("events/<int:pk>/ical/", views.export_event_ical, name="event_ical"),
+    path("events/archived/", views.ArchivedEventListView.as_view(), name="event_archived"),
+    path("events/<int:event_pk>/attendees/new/", views.AttendeeCreateView.as_view(), name="attendee_create"),
+    path("attendees/<int:pk>/edit/", views.AttendeeUpdateView.as_view(), name="attendee_update"),
+    path("attendees/<int:pk>/delete/", views.AttendeeDeleteView.as_view(), name="attendee_delete"),
+    path("events/<int:event_pk>/resources/new/", views.ResourceCreateView.as_view(), name="resource_create"),
+    path("resources/<int:pk>/edit/", views.ResourceUpdateView.as_view(), name="resource_update"),
+    path("resources/<int:pk>/delete/", views.ResourceDeleteView.as_view(), name="resource_delete"),
+    path("events/<int:event_pk>/budget/new/", views.BudgetItemCreateView.as_view(), name="budget_create"),
+    path("budget/<int:pk>/edit/", views.BudgetItemUpdateView.as_view(), name="budget_update"),
+    path("budget/<int:pk>/delete/", views.BudgetItemDeleteView.as_view(), name="budget_delete"),
+    path("events/<int:event_pk>/volunteers/new/", views.VolunteerCreateView.as_view(), name="volunteer_create"),
+    path("volunteers/<int:pk>/edit/", views.VolunteerUpdateView.as_view(), name="volunteer_update"),
+    path("volunteers/<int:pk>/delete/", views.VolunteerDeleteView.as_view(), name="volunteer_delete"),
+    path("volunteers/", views.VolunteerListView.as_view(), name="volunteer_list"),
+    path("events/<int:event_pk>/feedback/new/", views.FeedbackCreateView.as_view(), name="feedback_create"),
+    path("feedback/<int:pk>/delete/", views.FeedbackDeleteView.as_view(), name="feedback_delete"),
+    path("feedback/", views.FeedbackListView.as_view(), name="feedback_list"),
+    path("announcements/", views.AnnouncementListView.as_view(), name="announcement_list"),
+    path("announcements/new/", views.AnnouncementCreateView.as_view(), name="announcement_create"),
+    path("announcements/<int:pk>/edit/", views.AnnouncementUpdateView.as_view(), name="announcement_update"),
+    path("announcements/<int:pk>/delete/", views.AnnouncementDeleteView.as_view(), name="announcement_delete"),
+    path("venues/", views.VenueListView.as_view(), name="venue_list"),
+    path("venues/new/", views.VenueCreateView.as_view(), name="venue_create"),
+    path("venues/<int:pk>/edit/", views.VenueUpdateView.as_view(), name="venue_update"),
+    path("venues/<int:pk>/delete/", views.VenueDeleteView.as_view(), name="venue_delete"),
+    path("departments/", views.DepartmentListView.as_view(), name="department_list"),
+    path("departments/new/", views.DepartmentCreateView.as_view(), name="department_create"),
+    path("departments/<int:pk>/edit/", views.DepartmentUpdateView.as_view(), name="department_update"),
+    path("departments/<int:pk>/delete/", views.DepartmentDeleteView.as_view(), name="department_delete"),
+    path("reports/", views.ReportView.as_view(), name="reports"),
+    path("participants/", views.ParticipantView.as_view(), name="participant_list"),
+]

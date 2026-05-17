@@ -1,0 +1,122 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">{{ profile.region }} Barangay EventCore</p>
+        <h1>{{ profile.name }} Event Command Center</h1>
+        <p>{{ profile.tagline }} Built for {{ profile.city }}, {{ profile.province }}.</p>
+        <div class="hero-pills">
+            <span>Programs</span><span>Attendance</span><span>Logistics</span><span>Budget</span>
+        </div>
+    </div>
+        <div class="hero-panel">
+        <div class="hero-panel-head">
+            <span>Today</span>
+            <strong>{% now "M d, Y" %}</strong>
+        </div>
+        <div class="hero-panel-tags">
+            <span class="chip success">{{ stats.active_events }} active</span>
+            <span class="chip info">{{ stats.events }} total</span>
+        </div>
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article><span>Total Events</span><strong>{{ stats.events }}</strong></article>
+    <article><span>Active Events</span><strong>{{ stats.active_events }}</strong></article>
+    <article><span>Attendees</span><strong>{{ stats.attendees }}</strong></article>
+    <article><span>Ready Resources</span><strong>{{ stats.resources_ready }}</strong></article>
+    <article><span>Tracked Budget</span><strong>PHP {{ stats.budget }}</strong></article>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>Quick Actions</h2>
+    </div>
+<div class="filter-row">
+        <a href="{% url 'eventcore:event_create' %}" class="btn primary">
+            <span class="btn-icon">+</span> Create Event
+        </a>
+        <a href="{% url 'eventcore:calendar' %}" class="btn secondary">
+            <span class="btn-icon">M</span> View Calendar
+        </a>
+        <a href="{% url 'eventcore:search' %}" class="btn ghost">
+            <span class="btn-icon">S</span> Global Search
+        </a>
+        <a href="{% url 'eventcore:export_csv' %}" class="btn ghost">
+            <span class="btn-icon">CSV</span> Export Data
+        </a>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>System Overview</h2>
+    </div>
+<div class="filter-row">
+        <div class="metric-row">
+            <div class="metric-label">
+                <span>Event Completion Rate</span>
+                <span>{{ stats.active_events|floatformat:0 }}/{{ stats.events }}</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ stats.completion_rate }}%;"></div>
+            </div>
+        </div>
+        <div class="metric-row">
+            <div class="metric-label">
+                <span>Resource Readiness</span>
+                <span>{{ stats.resources_ready }} ready</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {% if stats.resources_ready %}100{% else %}25{% endif %}%;" data-bg-secondary></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="module-grid">
+    <a href="{% url 'eventcore:event_list' %}"><span>EP</span><strong>Event Planning</strong><small>Schedule, category, venue, organizer, status, target audience.</small></a>
+    <a href="{% url 'eventcore:calendar' %}"><span>CV</span><strong>Calendar View</strong><small>Monthly calendar with event visualization and navigation.</small></a>
+    <a href="{% url 'eventcore:search' %}"><span>GS</span><strong>Global Search</strong><small>Search across all events, announcements, and attendees.</small></a>
+    <a href="{% url 'eventcore:venue_list' %}"><span>VN</span><strong>Venues</strong><small>Barangay hall, plaza, covered court, purok sites, capacity.</small></a>
+    <a href="{% url 'eventcore:announcement_list' %}"><span>NT</span><strong>Notices</strong><small>Publish advisories connected to official barangay events.</small></a>
+    <a href="{% url 'eventcore:department_list' %}"><span>DP</span><strong>Departments</strong><small>Manage organizing teams and responsibilities.</small></a>
+</section>
+
+<section class="content-grid">
+    <div class="panel">
+        <div class="section-head">
+            <h2>Upcoming EventCore Schedule</h2>
+            <a href="{% url 'eventcore:event_list' %}">View all</a>
+        </div>
+        <div class="list">
+            {% for event in events %}
+                <a class="row" href="{% url 'eventcore:event_detail' event.pk %}">
+                    <span><strong>{{ event.title }}</strong><small>{{ event.venue.name }} - {{ event.start_at|date:"M d, Y g:i A" }}</small></span>
+                    <em class="badge {{ event.status|slugify }}">{{ event.status }}</em>
+                </a>
+            {% empty %}
+                <p class="empty">No events scheduled yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="panel">
+        <div class="section-head">
+            <h2>Public Notices</h2>
+            <a href="{% url 'eventcore:announcement_list' %}">View all</a>
+        </div>
+        <div class="list">
+            {% for announcement in announcements %}
+                <a class="row" href="{% url 'eventcore:announcement_update' announcement.pk %}">
+                    <span><strong>{{ announcement.title }}</strong><small>{{ announcement.published_on|date:"M d, Y" }}</small></span>
+                    <em class="badge">{{ announcement.category }}</em>
+                </a>
+            {% empty %}
+                <p class="empty">No announcements yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

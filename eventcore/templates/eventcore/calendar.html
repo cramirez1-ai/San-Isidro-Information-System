@@ -1,0 +1,82 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Event Calendar</p>
+        <h1>Barangay Event Schedule</h1>
+        <p>View all upcoming events in a calendar format. Navigate through months to plan ahead.</p>
+        <div class="hero-pills">
+            <span>Monthly View</span><span>Event Planning</span><span>Schedule Overview</span>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <span>Current Month</span>
+        <strong>{{ month_label }}</strong>
+        <a class="btn primary" href="{% url 'eventcore:event_create' %}">Plan New Event</a>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>Calendar Navigation</h2>
+<div class="filter-row">
+            {% if month == 1 %}
+                <a href="?year={{ year|add:-1 }}&month=12" class="btn secondary">Previous</a>
+            {% else %}
+                <a href="?year={{ year }}&month={{ month|add:-1 }}" class="btn secondary">Previous</a>
+            {% endif %}
+
+            <a href="?year={{ today.year }}&month={{ today.month }}" class="btn ghost">Today</a>
+
+            {% if month == 12 %}
+                <a href="?year={{ year|add:1 }}&month=1" class="btn secondary">Next</a>
+            {% else %}
+                <a href="?year={{ year }}&month={{ month|add:1 }}" class="btn secondary">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="calendar-grid">
+        <div class="calendar-day header-day">Sun</div>
+        <div class="calendar-day header-day">Mon</div>
+        <div class="calendar-day header-day">Tue</div>
+        <div class="calendar-day header-day">Wed</div>
+        <div class="calendar-day header-day">Thu</div>
+        <div class="calendar-day header-day">Fri</div>
+        <div class="calendar-day header-day">Sat</div>
+
+        {% for day in calendar_days %}
+            <div class="calendar-day {% if day.date == today %}today{% endif %} {% if day.events %}has-events{% endif %}"
+                 title="{% for event in day.events %}{{ event.title }} ({{ event.start_at|time }}){% if not forloop.last %}, {% endif %}{% endfor %}">
+                {{ day.day }}
+                {% if day.events %}
+<div class="event-count">
+                        {{ day.events|length }} event{{ day.events|pluralize }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>Events This Month</h2>
+        <a href="{% url 'eventcore:event_list' %}">View All Events</a>
+    </div>
+    <div class="list">
+        {% for event in events %}
+            <a class="row" href="{% url 'eventcore:event_detail' event.pk %}">
+                <span>
+                    <strong>{{ event.title }}</strong>
+                    <small>{{ event.venue.name }} • {{ event.start_at|date:"M d, Y g:i A" }}</small>
+                </span>
+                <em class="badge {{ event.status|slugify }}">{{ event.status }}</em>
+            </a>
+        {% empty %}
+            <p class="empty">No events scheduled for this month.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

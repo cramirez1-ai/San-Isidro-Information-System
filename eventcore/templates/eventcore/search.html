@@ -1,0 +1,117 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Global Search</p>
+        <h1>Find Anything in EventCore</h1>
+        <p>Search across events, announcements, attendees, and more. Get instant results.</p>
+        <div class="hero-pills">
+            <span>Smart Search</span><span>Instant Results</span><span>Cross-Platform</span>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <span>Search Status</span>
+        <strong>{% if query %}Results for "{{ query }}"{% else %}Ready to Search{% endif %}</strong>
+        <a class="btn primary" href="{% url 'eventcore:dashboard' %}">Back to Dashboard</a>
+    </div>
+</section>
+
+<section class="panel">
+    <form method="get" class="search-bar">
+        <span class="search-icon">S</span>
+        <input type="text" name="q" value="{{ query }}" placeholder="Search events, announcements, attendees..." class="search-input" autofocus>
+        <button type="submit" class="btn primary search-submit">Search</button>
+    </form>
+</section>
+
+{% if query %}
+<section class="content-grid">
+    <div class="panel">
+        <div class="section-head">
+            <h2>Events ({{ events|length }})</h2>
+            <a href="{% url 'eventcore:event_list' %}?q={{ query }}">View All</a>
+        </div>
+        <div class="list">
+            {% for event in events %}
+                <a class="row" href="{% url 'eventcore:event_detail' event.pk %}">
+                    <span>
+                        <strong>{{ event.title }}</strong>
+                        <small>{{ event.venue.name }} • {{ event.start_at|date:"M d, Y g:i A" }}</small>
+                    </span>
+                    <em class="badge {{ event.status|slugify }}">{{ event.status }}</em>
+                </a>
+            {% empty %}
+                <p class="empty">No events found matching "{{ query }}"</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="section-head">
+            <h2>Announcements ({{ announcements|length }})</h2>
+            <a href="{% url 'eventcore:announcement_list' %}">View All</a>
+        </div>
+        <div class="list">
+            {% for announcement in announcements %}
+                <a class="row" href="{% url 'eventcore:announcement_update' announcement.pk %}">
+                    <span>
+                        <strong>{{ announcement.title }}</strong>
+                        <small>{{ announcement.published_on|date:"M d, Y" }} • {{ announcement.category }}</small>
+                    </span>
+                    <em class="badge">{{ announcement.category }}</em>
+                </a>
+            {% empty %}
+                <p class="empty">No announcements found matching "{{ query }}"</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="section-head">
+            <h2>Attendees ({{ attendees|length }})</h2>
+            <a href="{% url 'eventcore:event_list' %}">View All Events</a>
+        </div>
+        <div class="list">
+            {% for attendee in attendees %}
+                <a class="row" href="{% url 'eventcore:event_detail' attendee.event.pk %}">
+                    <span>
+                        <strong>{{ attendee.full_name }}</strong>
+                        <small>{{ attendee.event.title }} • {{ attendee.role }}</small>
+                    </span>
+                    <em class="badge {{ attendee.status|slugify }}">{{ attendee.status }}</em>
+                </a>
+            {% empty %}
+                <p class="empty">No attendees found matching "{{ query }}"</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <h2>Search Statistics</h2>
+    </div>
+    <div class="stats-grid">
+        <article><span>Events Found</span><strong>{{ events|length }}</strong></article>
+        <article><span>Announcements</span><strong>{{ announcements|length }}</strong></article>
+        <article><span>Attendees</span><strong>{{ attendees|length }}</strong></article>
+        <article><span>Total Results</span><strong>{{ events|length|add:announcements|length|add:attendees|length }}</strong></article>
+    </div>
+</section>
+{% else %}
+<section class="panel">
+    <div class="empty-state">
+        <div class="empty-state-mark">S</div>
+        <h2>Start Your Search</h2>
+        <p>Enter keywords above to search across all EventCore data including events, announcements, attendees, venues, and more.</p>
+        <div class="hero-panel-tags">
+            <span class="chip info">Events</span>
+            <span class="chip success">Announcements</span>
+            <span class="chip warning">Attendees</span>
+            <span class="chip error">Venues</span>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

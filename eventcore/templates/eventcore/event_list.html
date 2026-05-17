@@ -1,0 +1,61 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">EventCore</p>
+        <h1>Event Command Center</h1>
+        <p>Manage every barangay program from first plan to final report.</p>
+    </div>
+    <a class="btn primary" href="{% url 'eventcore:event_create' %}">New Event</a>
+</section>
+
+<section class="stats-grid compact">
+    <article><span>Total</span><strong>{{ total_events }}</strong></article>
+    <article><span>Active</span><strong>{{ active_events }}</strong></article>
+    <article><span>Public</span><strong>{{ public_events }}</strong></article>
+    <article><span>Attendees</span><strong>{{ attendee_total }}</strong></article>
+</section>
+
+<form class="filter-row" method="get">
+    <input class="form-control search-input" type="search" name="q" value="{{ query }}" placeholder="Search event, venue, organizer, audience">
+    <select class="form-control" name="category">
+        <option value="">All categories</option>
+        {% for value, label in category_choices %}<option value="{{ value }}"{% if category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <select class="form-control" name="status">
+        <option value="">All status</option>
+        {% for value, label in status_choices %}<option value="{{ value }}"{% if status == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+    <button class="btn secondary" type="submit">Filter</button>
+</form>
+
+<section class="event-grid">
+    {% for event in events %}
+        <article class="event-card">
+            <div class="event-top">
+                <span class="badge {{ event.status|slugify }}">{{ event.status }}</span>
+                <span>{{ event.category }}</span>
+            </div>
+            <h2>{{ event.title }}</h2>
+            <p>{{ event.description|default:"No description yet."|truncatechars:130 }}</p>
+            <dl>
+                <div><dt>Venue</dt><dd>{{ event.venue.name }}</dd></div>
+                <div><dt>Schedule</dt><dd>{{ event.start_at|date:"M d, Y g:i A" }}</dd></div>
+                <div><dt>Audience</dt><dd>{{ event.target_audience|default:"Residents" }}</dd></div>
+                <div><dt>Budget</dt><dd>PHP {{ event.total_budget }}</dd></div>
+            </dl>
+            <footer>
+                <span>{{ event.attendees.count }} attendee{{ event.attendees.count|pluralize }}</span>
+                <span>{{ event.resources.count }} resource{{ event.resources.count|pluralize }}</span>
+                <a href="{% url 'eventcore:event_detail' event.pk %}">Open</a>
+                <a href="{% url 'eventcore:event_update' event.pk %}">Edit</a>
+                <a class="danger-link" href="{% url 'eventcore:event_delete' event.pk %}">Delete</a>
+            </footer>
+        </article>
+    {% empty %}
+        <p class="empty">No events found.</p>
+    {% endfor %}
+</section>
+{% include "eventcore/pagination.html" %}
+{% endblock %}

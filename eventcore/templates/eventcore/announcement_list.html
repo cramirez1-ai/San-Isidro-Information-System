@@ -1,0 +1,25 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div><p class="eyebrow">Public Notices</p><h1>Announcements</h1><p>Publish event advisories, meetings, health notices, and emergency updates.</p></div>
+    <a class="btn primary" href="{% url 'eventcore:announcement_create' %}">New Announcement</a>
+</section>
+<section class="stack">
+    {% for announcement in announcements %}
+        <article class="panel">
+            <div class="section-head">
+                <div><span class="badge">{{ announcement.category }}</span><h2>{{ announcement.title }}</h2></div>
+                <div class="row-actions">
+                    <a href="{% url 'eventcore:announcement_update' announcement.pk %}">Edit</a>
+                    <a class="danger-link" href="{% url 'eventcore:announcement_delete' announcement.pk %}">Delete</a>
+                </div>
+            </div>
+            <p>{{ announcement.body|linebreaksbr }}</p>
+            <small>{{ announcement.published_on|date:"M d, Y" }}{% if announcement.event %} - {{ announcement.event.title }}{% endif %}</small>
+        </article>
+    {% empty %}
+        <p class="empty">No announcements yet.</p>
+    {% endfor %}
+</section>
+{% endblock %}

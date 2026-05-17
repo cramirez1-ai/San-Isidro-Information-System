@@ -1,0 +1,83 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div>
+        <p class="eyebrow">{{ event.category }} Event</p>
+        <h1>{{ event.title }}</h1>
+        <p>{{ event.description|default:"This event is ready for barangay coordination." }}</p>
+    </div>
+    <div class="button-row">
+        <a class="btn primary" href="{% url 'eventcore:event_update' event.pk %}">Edit Event</a>
+        <a class="btn danger" href="{% url 'eventcore:event_delete' event.pk %}">Delete Event</a>
+        <a class="btn secondary" href="{% url 'eventcore:event_list' %}">Back</a>
+        <a class="btn ghost" href="{% url 'eventcore:event_ical' event.pk %}">📅 Download Calendar</a>
+    </div>
+</section>
+
+<section class="detail-grid">
+    <div class="panel wide">
+        <div class="section-head"><h2>Overview</h2></div>
+        <dl class="facts">
+            <div><dt>Venue</dt><dd>{{ event.venue.name }}</dd></div>
+            <div><dt>Starts</dt><dd>{{ event.start_at|date:"M d, Y g:i A" }}</dd></div>
+            <div><dt>Ends</dt><dd>{{ event.end_at|date:"M d, Y g:i A" }}</dd></div>
+            <div><dt>Department</dt><dd>{{ event.department|default:"Not assigned" }}</dd></div>
+            <div><dt>Organizer</dt><dd>{{ event.organizer }}</dd></div>
+            <div><dt>Audience</dt><dd>{{ event.target_audience|default:"Residents" }}</dd></div>
+            <div><dt>Expected</dt><dd>{{ event.expected_attendees }}</dd></div>
+            <div><dt>Budget Ceiling</dt><dd>PHP {{ event.budget_ceiling }}</dd></div>
+        </dl>
+        {% if event.risk_notes %}<p class="note">{{ event.risk_notes|linebreaksbr }}</p>{% endif %}
+    </div>
+    <div class="panel">
+        <div class="section-head"><h2>Attendees</h2><a href="{% url 'eventcore:attendee_create' event.pk %}">Add</a></div>
+        <div class="list">
+            {% for attendee in event.attendees.all %}
+                <div class="row"><span><strong>{{ attendee.full_name }}</strong><small>{{ attendee.role }}{% if attendee.purok %} - {{ attendee.purok }}{% endif %}</small></span><em class="badge {{ attendee.status|slugify }}">{{ attendee.status }}</em><span class="row-actions"><a href="{% url 'eventcore:attendee_update' attendee.pk %}">Edit</a><a class="danger-link" href="{% url 'eventcore:attendee_delete' attendee.pk %}">Delete</a></span></div>
+            {% empty %}<p class="empty">No attendees yet.</p>{% endfor %}
+        </div>
+    </div>
+    <div class="panel">
+        <div class="section-head"><h2>Resources</h2><a href="{% url 'eventcore:resource_create' event.pk %}">Add</a></div>
+        <div class="list">
+            {% for resource in event.resources.all %}
+                <div class="row"><span><strong>{{ resource.item }}</strong><small>{{ resource.quantity }} item{{ resource.quantity|pluralize }}{% if resource.custodian %} - {{ resource.custodian }}{% endif %}</small></span><em class="badge {{ resource.status|slugify }}">{{ resource.status }}</em><span class="row-actions"><a href="{% url 'eventcore:resource_update' resource.pk %}">Edit</a><a class="danger-link" href="{% url 'eventcore:resource_delete' resource.pk %}">Delete</a></span></div>
+            {% empty %}<p class="empty">No resources yet.</p>{% endfor %}
+        </div>
+    </div>
+    <div class="panel">
+        <div class="section-head"><h2>Budget</h2><a href="{% url 'eventcore:budget_create' event.pk %}">Add</a></div>
+        <div class="list">
+            {% for budget in event.budget_items.all %}
+                <div class="row"><span><strong>{{ budget.item }}</strong><small>{{ budget.funding_source|default:"Barangay fund" }}</small></span><em class="badge {{ budget.status|slugify }}">PHP {{ budget.amount }}</em><span class="row-actions"><a href="{% url 'eventcore:budget_update' budget.pk %}">Edit</a><a class="danger-link" href="{% url 'eventcore:budget_delete' budget.pk %}">Delete</a></span></div>
+            {% empty %}<p class="empty">No budget items yet.</p>{% endfor %}
+        </div>
+    </div>
+</section>
+{% if user.is_staff %}
+<div style="background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px;margin-top:16px">
+  <p><strong>Approval Status:</strong> {{ event.approval_status }}</p>
+  {% if event.approval_status == 'Pending' %}
+  <form method="post" action="{% url 'eventcore:event_approve' event.pk %}">
+    {% csrf_token %}
+    <textarea name="approval_notes" placeholder="Notes (optional)" 
+      style="width:100%;margin-bottom:8px;padding:8px;border-radius:6px;border:1px solid #ccc"></textarea>
+    <button name="action" value="approve" 
+      style="background:#16a34a;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer;margin-right:8px">
+      ✅ Approve
+    </button>
+    <button name="action" value="reject" 
+      style="background:#dc2626;color:white;padding:8px 16px;border:none;border-radius:6px;cursor:pointer">
+      ❌ Reject
+    </button>
+  </form>
+  {% else %}
+  <p style="color:{% if event.approval_status == 'Approved' %}green{% else %}red{% endif %}">
+    <strong>{{ event.approval_status }}</strong>
+    {% if event.approval_notes %} — {{ event.approval_notes }}{% endif %}
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

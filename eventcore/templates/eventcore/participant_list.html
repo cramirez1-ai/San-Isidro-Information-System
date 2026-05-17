@@ -1,0 +1,64 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<div class="page-title">
+  <div>
+    <p class="eyebrow">Level 3 Feature</p>
+    <h1>Participant Database</h1>
+    <p>All registered attendees across all barangay events.</p>
+  </div>
+  <a href="{% url 'eventcore:reports' %}" class="btn secondary">Reports</a>
+</div>
+
+{% if attendees %}
+<div class="panel">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Purok</th>
+          <th>Contact</th>
+          <th>Event</th>
+          <th>Role</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attendees %}
+        <tr>
+          <td><strong>{{ a.full_name }}</strong></td>
+          <td>{{ a.purok|default:"—" }}</td>
+          <td>{{ a.contact_number|default:"—" }}</td>
+          <td><a href="{% url 'eventcore:event_detail' a.event.pk %}">{{ a.event.title }}</a></td>
+          <td>{{ a.role|default:"—" }}</td>
+          <td><span class="badge {{ a.status|lower }}">{{ a.get_status_display }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+  {% if page_obj.has_previous %}
+  <a href="?page={{ page_obj.previous_page_number }}">← Prev</a>
+  {% endif %}
+  <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}
+  <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-mark">PD</div>
+  <h2>No Participants Yet</h2>
+  <p>Attendees added to events will appear here.</p>
+  <a href="{% url 'eventcore:event_list' %}" class="btn primary">Go to Events</a>
+</div>
+{% endif %}
+
+{% endblock %}

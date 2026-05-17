@@ -1,0 +1,20 @@
+{% extends "eventcore/base.html" %}
+
+{% block content %}
+<section class="page-title">
+    <div><p class="eyebrow">Facilities</p><h1>Venues</h1><p>Manage barangay hall, covered court, plaza, purok spaces, and event capacity.</p></div>
+    <a class="btn primary" href="{% url 'eventcore:venue_create' %}">New Venue</a>
+</section>
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>Venue</th><th>Purok</th><th>Capacity</th><th>Manager</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for venue in venues %}
+                <tr><td>{{ venue.name }}</td><td>{{ venue.purok|default:"-" }}</td><td>{{ venue.capacity }}</td><td>{{ venue.manager|default:"-" }}</td><td>{% if venue.is_active %}Active{% else %}Inactive{% endif %}</td><td><span class="row-actions"><a href="{% url 'eventcore:venue_update' venue.pk %}">Edit</a><a class="danger-link" href="{% url 'eventcore:venue_delete' venue.pk %}">Delete</a></span></td></tr>
+            {% empty %}
+                <tr><td colspan="6" class="empty">No venues recorded.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
