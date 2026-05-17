@@ -368,6 +368,46 @@ td {
     -webkit-overflow-scrolling: touch;
 }
 
+@media (min-width: 1200px) {
+    .app-shell {
+        grid-template-columns: 270px minmax(0,1fr);
+    }
+
+    .page {
+        padding: 32px;
+    }
+
+    .hero, .page-title {
+        padding: 34px 38px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+    }
+
+    .event-grid, .card-grid {
+        grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+    }
+
+    .module-grid {
+        grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+    }
+}
+
+@media (min-width: 901px) {
+    .sidebar {
+        transform: none !important;
+    }
+
+    .overlay {
+        display: none !important;
+    }
+
+    .top-actions {
+        flex-shrink: 0;
+    }
+}
+
 @media (max-width: 900px) {
     .app-shell { grid-template-columns: 1fr; }
     .sidebar { position: fixed; inset: 0 auto 0 0; width: min(80vw,280px); transform: translateX(-105%); transition: transform 180ms ease; height: 100vh; }
@@ -384,6 +424,30 @@ td {
     .page { max-width: 100%; }
 }
 
+@media (max-width: 760px) {
+    .content-grid, .detail-grid {
+        gap: 12px;
+    }
+
+    .hero, .page-title {
+        flex-direction: column;
+    }
+
+    .page-title .button-row {
+        width: 100%;
+    }
+
+    .page-title .button-row .btn {
+        flex: 1 1 140px;
+    }
+
+    .calendar-grid {
+        overflow-x: auto;
+        grid-template-columns: repeat(7, minmax(58px,1fr));
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
 @media (max-width: 600px) {
     body { font-size: 13px; }
     .page { padding: 14px 12px; }
@@ -392,6 +456,12 @@ td {
     .topbar > div:first-child strong { font-size: 13px; }
     .topbar > div:first-child span { font-size: 9px; }
     .drawer-toggle { height: 36px; padding: 0 12px; }
+    .top-actions {
+        scrollbar-width: none;
+    }
+    .top-actions::-webkit-scrollbar {
+        display: none;
+    }
     .hero, .page-title { padding: 18px; flex-direction: column; border-radius: 12px; margin-bottom: 16px; }
     .hero h1, .page-title h1 { font-size: 1.35rem; }
     .hero-panel { width: 100%; min-width: 0; }
@@ -407,6 +477,7 @@ td {
     .section-head { padding: 14px; align-items: flex-start; gap: 10px; }
     .section-head h2 { font-size: 13px; }
     .filter-row { flex-direction: column; align-items: stretch; padding: 12px; }
+    .filter-row > * { width: 100%; }
     .filter-row .btn, .button-row .btn, .page-title .btn, .event-card footer .btn { width: 100%; }
     .button-row { width: 100%; align-items: stretch; }
     .record-form { padding: 16px; gap: 14px; }
@@ -429,6 +500,8 @@ td {
 }
 
 @media (max-width: 380px) {
+    .page { padding: 10px; }
+    .topbar { padding-left: 10px; padding-right: 10px; }
     .stats-grid { grid-template-columns: 1fr; }
     .top-actions .btn { padding: 0 12px; }
     .brand-copy strong { font-size: 13px; }
