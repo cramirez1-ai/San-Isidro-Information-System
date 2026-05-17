@@ -67,3 +67,10 @@ After the first deploy, create an admin user from Render Shell:
 ```bash
 python manage.py createsuperuser
 ```
+
+The build script also runs `python manage.py ensure_single_admin`, which creates one admin account by default:
+
+- Username: `CONIE`
+- Password: `Conie@12345`
+
+You can override it in Render with `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, and `DJANGO_SUPERUSER_PASSWORD`.
