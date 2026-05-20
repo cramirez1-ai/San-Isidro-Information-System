@@ -77,11 +77,12 @@ class DashboardView(AdminRequiredMixin, TemplateView):
     template_name = "barangay/dashboard.html"
 
 from datetime import date
-today = date.today()
-context['male_count'] = Resident.objects.filter(gender='Male').count()
-context['female_count'] = Resident.objects.filter(gender='Female').count()
-context['senior_count'] = Resident.objects.filter(date_of_birth__lte=date(today.year-60, today.month, today.day)).count()
-context['pwd_count'] = Resident.objects.filter(is_pwd=True).count()
+        today = date.today()
+        context['male_count'] = Resident.objects.filter(gender='Male').count()
+        context['female_count'] = Resident.objects.filter(gender='Female').count()
+        context['senior_count'] = Resident.objects.filter(date_of_birth__lte=date(today.year-60, today.month, today.day)).count()
+        context['pwd_count'] = Resident.objects.filter(is_pwd=True).count()
+        return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
