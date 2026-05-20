@@ -117,4 +117,5 @@ urlpatterns = [
     path("notifications/new/", views.NotificationCreateView.as_view(), name="notification_create"),
     path("notifications/<int:pk>/edit/", views.NotificationUpdateView.as_view(), name="notification_update"),
     path("audit-logs/", views.AuditLogListView.as_view(), name="audit_log_list"),
+    path("reports/residents/pdf/", views.ResidentPDFView.as_view(), name="residents_pdf"),
 ]

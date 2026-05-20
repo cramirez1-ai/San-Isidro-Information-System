@@ -815,4 +815,3 @@ class ResidentPDFView(AdminRequiredMixin, View):
                 y = 750
         p.save()
         return response
-path("reports/residents/pdf/", views.ResidentPDFView.as_view(), name="residents_pdf"),
