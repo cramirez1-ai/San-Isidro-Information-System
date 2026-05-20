@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.views import View
+
 
 from .forms import (
     AnnouncementForm,
@@ -793,3 +795,24 @@ class AuditLogListView(AdminRequiredMixin, ListView):
     template_name = "barangay/audit_log_list.html"
     context_object_name = "logs"
     paginate_by = 30
+class ResidentPDFView(AdminRequiredMixin, View):
+    def get(self, request):
+        from django.http import HttpResponse
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="residents.pdf"'
+        p = canvas.Canvas(response, pagesize=letter)
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(150, 750, "Barangay San Isidro - Resident List")
+        p.setFont("Helvetica", 11)
+        y = 710
+        for r in Resident.objects.all():
+            p.drawString(50, y, f"{r.last_name}, {r.first_name} | {r.gender} | {r.civil_status} | Age: {r.age}")
+            y -= 22
+            if y < 60:
+                p.showPage()
+                y = 750
+        p.save()
+        return response
+path("reports/residents/pdf/", views.ResidentPDFView.as_view(), name="residents_pdf"),
