@@ -1,0 +1,28 @@
+{% extends 'barangay/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Feedback List</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Rating</th>
+        <th>Comment</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in feedbacks %}
+      <tr>
+        <td>{{ f.name|default:"Anonymous" }}</td>
+        <td>{{ f.rating }}</td>
+        <td>{{ f.comment }}</td>
+        <td>{{ f.created_at|date:"M d, Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No feedback yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

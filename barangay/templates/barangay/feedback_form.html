@@ -1,0 +1,26 @@
+{% extends 'barangay/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Submit Feedback</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label>Name (Optional)</label>
+      <input type="text" name="name" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label>Rating</label>
+      <select name="rating" class="form-control">
+        <option value="Excellent">⭐⭐⭐ Excellent</option>
+        <option value="Good">⭐⭐ Good</option>
+        <option value="Poor">⭐ Poor</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label>Comment</label>
+      <textarea name="comment" class="form-control" rows="4"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Submit Feedback</button>
+  </form>
+</div>
+{% endblock %}

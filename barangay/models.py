@@ -578,3 +578,17 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.action} - {self.user or 'System'}"
+
+class Feedback(models.Model):
+    RATING_CHOICES = [
+        ('Excellent', 'Excellent'),
+        ('Good', 'Good'),
+        ('Poor', 'Poor'),
+    ]
+    name = models.CharField(max_length=100, blank=True)
+    rating = models.CharField(max_length=20, choices=RATING_CHOICES)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.rating} - {self.name}"

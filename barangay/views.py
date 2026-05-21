@@ -34,6 +34,7 @@ from .models import (
     Event,
     EventAttendee,
     EventResource,
+    Feedback,
     HealthRecord,
     Household,
     Project,
@@ -816,3 +817,25 @@ class ResidentPDFView(AdminRequiredMixin, View):
                 y = 750
         p.save()
         return response
+
+class FeedbackCreateView(CreateView):
+    model = Feedback
+    fields = ['name', 'rating', 'comment']
+    template_name = 'barangay/feedback_form.html'
+    success_url = '/feedback/success/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Submit Feedback'
+        return context
+
+
+class FeedbackSuccessView(TemplateView):
+    template_name = 'barangay/feedback_success.html'
+
+
+class FeedbackListView(AdminRequiredMixin, ListView):
+    model = Feedback
+    template_name = 'barangay/feedback_list.html'
+    context_object_name = 'feedbacks'
+    paginate_by = 20

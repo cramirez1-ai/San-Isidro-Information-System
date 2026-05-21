@@ -118,4 +118,7 @@ urlpatterns = [
     path("notifications/<int:pk>/edit/", views.NotificationUpdateView.as_view(), name="notification_update"),
     path("audit-logs/", views.AuditLogListView.as_view(), name="audit_log_list"),
     path("reports/residents/pdf/", views.ResidentPDFView.as_view(), name="residents_pdf"),
+    path("feedback/", views.FeedbackCreateView.as_view(), name="feedback"),
+    path("feedback/success/", views.FeedbackSuccessView.as_view(), name="feedback_success"),
+    path("feedback/list/", views.FeedbackListView.as_view(), name="feedback_list"),
 ]
