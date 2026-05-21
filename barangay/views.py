@@ -101,6 +101,13 @@ class DashboardView(AdminRequiredMixin, TemplateView):
         )[:4]
         context["officials"] = BarangayOfficial.objects.filter(is_active=True)[:6]
         context["services"] = Service.objects.filter(is_active=True)[:6]
+        from datetime import date
+        today = date.today()
+        context['male_count'] = Resident.objects.filter(gender='Male').count()
+        context['female_count'] = Resident.objects.filter(gender='Female').count()
+        senior_date = date(today.year-60, today.month, today.day)
+        context['senior_count'] = Resident.objects.filter(date_of_birth__lte=senior_date).count()
+        context['pwd_count'] = Resident.objects.filter(is_pwd=True).count()
         return context
 
 
