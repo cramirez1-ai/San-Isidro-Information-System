@@ -1,0 +1,38 @@
+{% extends 'barangay/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>🚨 Emergency Hotlines</h2>
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-danger mb-3">
+        <div class="card-body text-center">
+          <h3>🚔 Police</h3>
+          <h4>166</h4>
+          <p>Surigao City Police</p>
+          <a href="tel:166" class="btn btn-light">Call Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-warning mb-3">
+        <div class="card-body text-center">
+          <h3>🚒 Fire Station</h3>
+          <h4>160</h4>
+          <p>Bureau of Fire Protection</p>
+          <a href="tel:160" class="btn btn-light">Call Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-success mb-3">
+        <div class="card-body text-center">
+          <h3>🏛️ Barangay Hall</h3>
+          <h4>09171234567</h4>
+          <p>Barangay San Isidro</p>
+          <a href="tel:09171234567" class="btn btn-light">Call Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

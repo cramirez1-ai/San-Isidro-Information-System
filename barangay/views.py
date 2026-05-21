@@ -839,3 +839,6 @@ class FeedbackListView(AdminRequiredMixin, ListView):
     template_name = 'barangay/feedback_list.html'
     context_object_name = 'feedbacks'
     paginate_by = 20
+
+class EmergencyHotlineView(TemplateView):
+    template_name = 'barangay/emergency_hotline.html'
