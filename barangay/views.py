@@ -82,18 +82,19 @@ class DashboardView(AdminRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["profile"] = BARANGAY_PROFILE
         context["stats"] = {
-            "residents": Resident.objects.count(),
-            "households": Household.objects.count(),
-            "upcoming_events": Event.objects.exclude(
-                status__in=[Event.Status.COMPLETED, Event.Status.CANCELLED]
-            ).count(),
-            "pending_requests": ServiceRequest.objects.filter(
-                status__in=[ServiceRequest.Status.PENDING, ServiceRequest.Status.PROCESSING]
-            ).count(),
-            "open_blotters": BlotterIncident.objects.exclude(
-                status__in=[BlotterIncident.Status.SETTLED, BlotterIncident.Status.CLOSED]
-            ).count(),
-        }
+    "residents": Resident.objects.count(),
+    "households": Household.objects.count(),
+    "upcoming_events": Event.objects.exclude(
+        status__in=[Event.Status.COMPLETED, Event.Status.CANCELLED]
+    ).count(),
+    "pending_requests": ServiceRequest.objects.filter(
+        status__in=[ServiceRequest.Status.PENDING, ServiceRequest.Status.PROCESSING]
+    ).count(),
+    "open_blotters": BlotterIncident.objects.exclude(
+        status__in=[BlotterIncident.Status.SETTLED, BlotterIncident.Status.CLOSED]
+    ).count(),
+    "total_users": User.objects.count(),
+}
         context["announcements"] = Announcement.objects.filter(is_published=True)[:4]
         context["requests"] = ServiceRequest.objects.select_related("service", "resident")[:5]
         context["events"] = Event.objects.select_related("lead_official").exclude(
